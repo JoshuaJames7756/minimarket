@@ -3,245 +3,135 @@
    Minimercado Control-Total | JVSoftware
    ============================================================ */
 
-/* ============================================================
-   LAYOUT GENERAL
-   ============================================================ */
 .inventario-layout {
-  max-width: 1300px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-xl);
+  max-width: 1300px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: var(--sp-8);
 }
 
 /* ============================================================
-   ENCABEZADO + CONTROLES
+   ENCABEZADO
    ============================================================ */
 .inventario-encabezado {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--espacio-lg);
-  flex-wrap: wrap;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: var(--sp-5); flex-wrap: wrap;
 }
 
 .inventario-titulo {
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: var(--texto-primario);
+  font-size: 1.7rem; font-weight: 800; letter-spacing: 0.05em;
+  background: linear-gradient(130deg, var(--texto-1) 40%, var(--menta-suave) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
-.inventario-controles {
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-sm);
-  flex-wrap: wrap;
-}
+.inventario-controles { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
 
-/* --- Buscador de inventario --- */
-.inv-buscador-wrapper {
-  position: relative;
-}
-
+.inv-buscador-wrapper { position: relative; }
 .inv-buscador-icono {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--texto-terciario);
-  font-size: 0.9rem;
-  pointer-events: none;
+  position: absolute; left: 11px; top: 50%;
+  transform: translateY(-50%); color: var(--texto-3);
+  font-size: 0.9rem; pointer-events: none;
 }
-
 .inv-input-busqueda {
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde-2);
-  border-radius: var(--radio-sm);
-  color: var(--texto-primario);
-  font-family: var(--fuente-ui);
-  font-size: 0.85rem;
-  padding: 8px 12px 8px 30px;
-  width: 220px;
-  transition: border-color var(--trans-rapida), box-shadow var(--trans-rapida);
+  background: var(--fondo-superficie); border: 1px solid var(--borde-normal);
+  border-radius: var(--r-pill); color: var(--texto-1);
+  font-family: var(--fuente-ui); font-size: 0.85rem;
+  padding: 8px 14px 8px 32px; width: 220px;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
-
 .inv-input-busqueda:focus {
-  border-color: var(--color-primario);
-  box-shadow: 0 0 0 3px rgba(163,230,53,0.08);
+  border-color: var(--menta-dim);
+  box-shadow: 0 0 0 3px rgba(110,231,183,0.09);
   outline: none;
 }
+.inv-input-busqueda::placeholder { color: var(--texto-3); }
 
-.inv-input-busqueda::placeholder { color: var(--texto-terciario); }
-
-/* --- Botón nuevo producto --- */
 .btn-nuevo-producto {
-  background: var(--color-primario);
-  color: var(--texto-invertido);
-  font-family: var(--fuente-ui);
-  font-weight: 700;
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
-  padding: 8px 16px;
-  border-radius: var(--radio-sm);
-  border: none;
-  white-space: nowrap;
-  transition: opacity var(--trans-rapida), transform var(--trans-rapida);
+  background: linear-gradient(135deg, var(--menta-dim), var(--menta));
+  color: var(--texto-inv); font-family: var(--fuente-ui);
+  font-weight: 700; font-size: 0.82rem; letter-spacing: 0.04em;
+  padding: 8px 18px; border-radius: var(--r-pill); border: none;
+  white-space: nowrap; box-shadow: var(--sombra-menta);
+  transition: opacity var(--t-fast), transform var(--t-fast);
 }
-
-.btn-nuevo-producto:hover {
-  opacity: 0.88;
-  transform: translateY(-1px);
-}
+.btn-nuevo-producto:hover { opacity: 0.86; transform: translateY(-1px); }
 
 /* ============================================================
-   SECCIÓN DE ALERTAS DE VENCIMIENTO
+   ALERTAS DE VENCIMIENTO
    ============================================================ */
 .alertas-seccion {
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
-  padding: var(--espacio-lg);
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-xl); padding: var(--sp-5);
 }
 
 .alertas-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--espacio-md);
-  flex-wrap: wrap;
-  gap: var(--espacio-sm);
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--sp-4); flex-wrap: wrap; gap: var(--sp-2);
 }
 
 .alertas-leyenda {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 0.72rem;
-  color: var(--texto-terciario);
+  display: flex; align-items: center; gap: 14px;
+  font-size: 0.71rem; color: var(--texto-3);
 }
 
 .leyenda-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 4px;
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; margin-right: 4px;
 }
+.leyenda-dot--critico     { background: var(--ambar); box-shadow: 0 0 5px rgba(251,191,36,0.5); }
+.leyenda-dot--advertencia { background: #fb923c; }
+.leyenda-dot--expirado    { background: var(--coral); box-shadow: 0 0 5px rgba(248,113,113,0.5); }
 
-.leyenda-dot--critico     { background: var(--color-advertencia); }
-.leyenda-dot--advertencia { background: var(--color-fiado); }
-.leyenda-dot--expirado    { background: var(--color-critico); }
+.alertas-contenedor { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.alertas-cargando { font-size: 0.77rem; color: var(--texto-3); }
+.alertas-ok { font-size: 0.82rem; color: var(--menta-dim); padding: var(--sp-2) 0; }
 
-.alertas-contenedor {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--espacio-sm);
-}
-
-.alertas-cargando {
-  font-size: 0.78rem;
-  color: var(--texto-terciario);
-}
-
-.alertas-ok {
-  font-size: 0.82rem;
-  color: var(--color-exito);
-  padding: var(--espacio-sm) 0;
-}
-
-/* --- Cada alerta individual --- */
+/* Chips de alerta */
 .alerta-item {
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-sm);
-  padding: 8px 12px;
-  border-radius: var(--radio-sm);
+  display: flex; align-items: center; gap: var(--sp-2);
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  background: var(--fondo-elevado);
   border-left: 3px solid;
-  background: var(--color-fondo-2);
-  min-width: 200px;
-  max-width: 280px;
-  flex: 1;
-  animation: alerta-entrar 200ms ease;
+  min-width: 190px; max-width: 270px; flex: 1;
+  animation: chip-in 200ms ease;
 }
-
-@keyframes alerta-entrar {
-  from { opacity: 0; transform: scale(0.96); }
+@keyframes chip-in {
+  from { opacity: 0; transform: scale(0.94); }
   to   { opacity: 1; transform: scale(1); }
 }
 
-.alerta-expirado {
-  border-color: var(--color-critico);
-  background: rgba(248,113,113,0.06);
-}
+.alerta-expirado    { border-color: var(--coral);  background: var(--coral-bg); }
+.alerta-critico     { border-color: var(--ambar);  background: var(--ambar-bg); }
+.alerta-advertencia { border-color: #fb923c; background: rgba(251,146,60,0.08); }
 
-.alerta-critico {
-  border-color: var(--color-advertencia);
-  background: rgba(251,191,36,0.06);
-}
-
-.alerta-advertencia {
-  border-color: var(--color-fiado);
-  background: rgba(251,146,60,0.06);
-}
-
-.alerta-nombre {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--texto-primario);
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.alerta-dias {
-  font-size: 0.7rem;
-  font-family: var(--fuente-mono);
-  white-space: nowrap;
-}
-
-.alerta-expirado .alerta-dias    { color: var(--color-critico); }
-.alerta-critico .alerta-dias     { color: var(--color-advertencia); }
-.alerta-advertencia .alerta-dias { color: var(--color-fiado); }
+.alerta-nombre { font-size: 0.82rem; font-weight: 600; color: var(--texto-1); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.alerta-dias { font-size: 0.69rem; font-family: var(--fuente-mono); white-space: nowrap; }
+.alerta-expirado .alerta-dias    { color: var(--coral); }
+.alerta-critico .alerta-dias     { color: var(--ambar); }
+.alerta-advertencia .alerta-dias { color: #fb923c; }
 
 .alerta-stock {
-  font-size: 0.68rem;
-  color: var(--texto-terciario);
-  white-space: nowrap;
-  background: var(--color-superficie-2);
-  padding: 2px 6px;
-  border-radius: 3px;
+  font-size: 0.67rem; color: var(--texto-3); white-space: nowrap;
+  background: var(--fondo-superficie); padding: 2px 7px; border-radius: var(--r-pill);
 }
 
 /* ============================================================
    TABLA DE PRODUCTOS
    ============================================================ */
 .tabla-seccion {
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
-  padding: var(--espacio-lg);
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-xl); padding: var(--sp-6);
 }
 
-.tabla-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--espacio-md);
-}
+.tabla-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-4); }
 
 .tabla-contador {
-  font-family: var(--fuente-mono);
-  font-size: 0.75rem;
-  color: var(--texto-terciario);
-  background: var(--color-fondo-2);
-  padding: 4px 10px;
-  border-radius: var(--radio-sm);
-  border: 1px solid var(--color-borde);
+  font-family: var(--fuente-mono); font-size: 0.74rem; color: var(--texto-3);
+  background: var(--fondo-elevado); padding: 4px 12px;
+  border-radius: var(--r-pill); border: 1px solid var(--borde-sutil);
 }
 
-/* --- Anchos de columna --- */
 .tabla-productos .col-codigo   { width: 130px; }
 .tabla-productos .col-nombre   { min-width: 180px; }
 .tabla-productos .col-categoria{ width: 120px; }
@@ -250,185 +140,92 @@
 .tabla-productos .col-costo    { width: 100px; text-align: right; font-family: var(--fuente-mono); }
 .tabla-productos .col-vence    { width: 140px; }
 .tabla-productos .col-acciones { width: 90px; text-align: center; }
-
-/* --- Alineación de datos numéricos --- */
 .tabla-productos td:nth-child(4) { text-align: center; font-family: var(--fuente-mono); }
 .tabla-productos td:nth-child(5),
 .tabla-productos td:nth-child(6) { text-align: right; font-family: var(--fuente-mono); }
 
-/* --- Acciones de tabla --- */
-.tabla-acciones {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
+.tabla-acciones { display: flex; align-items: center; justify-content: center; gap: 5px; }
 
 .btn-editar-producto,
 .btn-eliminar-producto {
-  background: transparent;
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-sm);
-  font-size: 0.75rem;
-  padding: 4px 7px;
-  cursor: pointer;
-  transition: background var(--trans-rapida), border-color var(--trans-rapida);
+  background: transparent; border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-md); font-size: 0.75rem;
+  padding: 4px 8px; cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast);
 }
-
-.btn-editar-producto:hover {
-  background: rgba(96,165,250,0.1);
-  border-color: var(--color-info);
-}
-
-.btn-eliminar-producto:hover {
-  background: rgba(248,113,113,0.1);
-  border-color: var(--color-critico);
-}
+.btn-editar-producto:hover  { background: var(--cielo-bg); border-color: rgba(125,211,252,0.4); }
+.btn-eliminar-producto:hover { background: var(--coral-bg); border-color: rgba(248,113,113,0.4); }
 
 /* ============================================================
-   MODAL DE PRODUCTO (Alta / Edición)
+   MODAL DE PRODUCTO
    ============================================================ */
-.modal-producto {
-  max-width: 560px;
-}
-
-.modal-producto .form-fila input[type="date"] {
-  color-scheme: dark;
-}
+.modal-producto { max-width: 560px; }
+.modal-producto .form-fila input[type="date"] { color-scheme: dark; }
 
 /* ============================================================
-   SECCIÓN DE PROVEEDORES
+   SECCIÓN PROVEEDORES
    ============================================================ */
 .proveedores-seccion {
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
-  padding: var(--espacio-lg);
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-xl); padding: var(--sp-6);
 }
 
 .proveedores-layout {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: var(--espacio-xl);
-  align-items: start;
+  display: grid; grid-template-columns: 1fr 300px;
+  gap: var(--sp-8); align-items: start;
 }
 
-/* --- Lista de proveedores --- */
-.proveedores-lista {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-sm);
-}
+.proveedores-lista { display: flex; flex-direction: column; gap: var(--sp-2); }
 
 .proveedor-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--color-fondo-2);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-sm);
-  padding: 10px 14px;
-  transition: border-color var(--trans-rapida);
-  animation: alerta-entrar 180ms ease;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--fondo-elevado);
+  border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-lg); padding: 11px 16px;
+  transition: border-color var(--t-fast); animation: chip-in 180ms ease;
 }
+.proveedor-item:hover { border-color: var(--borde-normal); }
 
-.proveedor-item:hover { border-color: var(--color-borde-2); }
+.proveedor-info { display: flex; flex-direction: column; gap: 3px; }
+.proveedor-info strong { font-size: 0.88rem; font-weight: 600; color: var(--texto-1); }
+.proveedor-info span { font-size: 0.74rem; color: var(--texto-3); font-family: var(--fuente-mono); }
 
-.proveedor-info {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.proveedor-info strong {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--texto-primario);
-}
-
-.proveedor-info span {
-  font-size: 0.75rem;
-  color: var(--texto-terciario);
-  font-family: var(--fuente-mono);
-}
-
-.proveedor-acciones {
-  display: flex;
-  gap: 6px;
-}
+.proveedor-acciones { display: flex; gap: 6px; }
 
 .btn-editar-proveedor,
 .btn-eliminar-proveedor {
-  background: transparent;
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-sm);
-  font-size: 0.75rem;
-  padding: 4px 8px;
-  cursor: pointer;
-  transition: background var(--trans-rapida), border-color var(--trans-rapida);
+  background: transparent; border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-md); font-size: 0.75rem;
+  padding: 4px 8px; cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast);
 }
+.btn-editar-proveedor:hover  { background: var(--cielo-bg); border-color: rgba(125,211,252,0.4); }
+.btn-eliminar-proveedor:hover { background: var(--coral-bg); border-color: rgba(248,113,113,0.4); }
 
-.btn-editar-proveedor:hover {
-  background: rgba(96,165,250,0.1);
-  border-color: var(--color-info);
-}
-
-.btn-eliminar-proveedor:hover {
-  background: rgba(248,113,113,0.1);
-  border-color: var(--color-critico);
-}
-
-/* --- Formulario de nuevo proveedor --- */
+/* Panel nuevo proveedor */
 .proveedor-nuevo-panel {
-  background: var(--color-fondo-2);
-  border: 1px solid var(--color-borde-2);
-  border-radius: var(--radio-md);
-  padding: var(--espacio-lg);
+  background: var(--fondo-elevado);
+  border: 1px solid var(--borde-normal);
+  border-radius: var(--r-xl); padding: var(--sp-6);
 }
 
 .panel-subtitulo {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--texto-terciario);
-  margin-bottom: var(--espacio-md);
+  font-size: 0.69rem; font-weight: 700;
+  letter-spacing: 0.11em; text-transform: uppercase;
+  color: var(--texto-3); margin-bottom: var(--sp-4);
 }
 
 /* ============================================================
-   RESPONSIVE INVENTARIO
+   RESPONSIVE
    ============================================================ */
-@media (max-width: 1000px) {
-  .proveedores-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
+@media (max-width: 1000px) { .proveedores-layout { grid-template-columns: 1fr; } }
 @media (max-width: 768px) {
-  .inventario-encabezado {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .inventario-controles {
-    width: 100%;
-  }
-
-  .inv-input-busqueda {
-    width: 100%;
-  }
-
-  .alertas-contenedor {
-    flex-direction: column;
-  }
-
-  .alerta-item {
-    max-width: 100%;
-  }
-
-  /* Oculta columnas menos críticas en móvil */
+  .inventario-encabezado { flex-direction: column; align-items: flex-start; }
+  .inventario-controles { width: 100%; }
+  .inv-input-busqueda { width: 100%; }
+  .alertas-contenedor { flex-direction: column; }
+  .alerta-item { max-width: 100%; }
   .tabla-productos .col-costo,
-  .tabla-productos .col-categoria {
-    display: none;
-  }
+  .tabla-productos .col-categoria { display: none; }
 }

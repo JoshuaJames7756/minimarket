@@ -1,492 +1,298 @@
 /* ============================================================
-   dashboard.css — Panel Financiero (Dashboard)
+   dashboard.css — Panel Financiero
    Minimercado Control-Total | JVSoftware
    ============================================================ */
 
-/* ============================================================
-   LAYOUT GENERAL DEL DASHBOARD
-   ============================================================ */
 .dashboard-layout {
-  max-width: 1300px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-xl);
+  max-width: 1300px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: var(--sp-8);
 }
 
 /* ============================================================
-   ENCABEZADO + FILTROS
+   ENCABEZADO
    ============================================================ */
 .dashboard-encabezado {
-  display: flex;
-  align-items: flex-end;
+  display: flex; align-items: flex-end;
   justify-content: space-between;
-  gap: var(--espacio-lg);
-  flex-wrap: wrap;
+  gap: var(--sp-6); flex-wrap: wrap;
 }
 
 .dashboard-titulo {
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: var(--texto-primario);
+  font-size: 1.7rem; font-weight: 800; letter-spacing: 0.05em;
+  background: linear-gradient(130deg, var(--texto-1) 40%, var(--menta-suave) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   line-height: 1;
 }
 
 .dashboard-periodo {
-  font-family: var(--fuente-mono);
-  font-size: 0.82rem;
-  color: var(--texto-terciario);
-  margin-top: 6px;
-  letter-spacing: 0.04em;
+  font-family: var(--fuente-mono); font-size: 0.81rem;
+  color: var(--texto-3); margin-top: 7px; letter-spacing: 0.04em;
 }
 
-.dashboard-filtro {
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-sm);
-  flex-wrap: wrap;
-}
+.dashboard-filtro { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
 
 .btn-filtrar {
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde-2);
-  border-radius: var(--radio-sm);
-  color: var(--texto-primario);
-  font-family: var(--fuente-ui);
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
-  padding: 7px 16px;
-  transition: border-color var(--trans-rapida), color var(--trans-rapida);
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde-normal); border-radius: var(--r-md);
+  color: var(--texto-1); font-family: var(--fuente-ui);
+  font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em;
+  padding: 7px 18px;
+  transition: border-color var(--t-fast), color var(--t-fast), background var(--t-fast);
 }
-
 .btn-filtrar:hover {
-  border-color: var(--color-primario);
-  color: var(--color-primario);
+  border-color: var(--borde-acento);
+  color: var(--menta); background: var(--menta-bg);
 }
 
 /* ============================================================
-   GRID DE TARJETAS FINANCIERAS
+   TARJETAS FINANCIERAS — Glassmorphism en las principales
    ============================================================ */
 .tarjetas-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--espacio-md);
+  gap: var(--sp-4);
 }
 
 .tarjeta {
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
-  padding: var(--espacio-lg);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: border-color var(--trans-normal), transform var(--trans-normal);
-  animation: tarjeta-entrar 400ms ease both;
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-xl); padding: var(--sp-5);
+  display: flex; flex-direction: column; gap: 8px;
+  transition: border-color var(--t-normal), transform var(--t-normal), box-shadow var(--t-normal);
+  animation: tarjeta-in 400ms ease both;
 }
+.tarjeta:hover { border-color: var(--borde-normal); transform: translateY(-3px); box-shadow: var(--sombra-md); }
 
-.tarjeta:hover {
-  border-color: var(--color-borde-2);
-  transform: translateY(-2px);
-}
+/* Stagger de entrada */
+.tarjeta:nth-child(1) { animation-delay: 40ms;  }
+.tarjeta:nth-child(2) { animation-delay: 90ms;  }
+.tarjeta:nth-child(3) { animation-delay: 140ms; }
+.tarjeta:nth-child(4) { animation-delay: 190ms; }
+.tarjeta:nth-child(5) { animation-delay: 240ms; }
+.tarjeta:nth-child(6) { animation-delay: 290ms; }
+.tarjeta:nth-child(7) { animation-delay: 340ms; }
+.tarjeta:nth-child(8) { animation-delay: 390ms; }
 
-@keyframes tarjeta-entrar {
-  from { opacity: 0; transform: translateY(12px); }
+@keyframes tarjeta-in {
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Stagger de animación por posición */
-.tarjeta:nth-child(1) { animation-delay: 50ms;  }
-.tarjeta:nth-child(2) { animation-delay: 100ms; }
-.tarjeta:nth-child(3) { animation-delay: 150ms; }
-.tarjeta:nth-child(4) { animation-delay: 200ms; }
-.tarjeta:nth-child(5) { animation-delay: 250ms; }
-.tarjeta:nth-child(6) { animation-delay: 300ms; }
-.tarjeta:nth-child(7) { animation-delay: 350ms; }
-.tarjeta:nth-child(8) { animation-delay: 400ms; }
-
 .tarjeta-etiqueta {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--texto-terciario);
+  font-size: 0.63rem; font-weight: 700;
+  letter-spacing: 0.13em; text-transform: uppercase; color: var(--texto-3);
 }
 
 .tarjeta-valor {
-  font-family: var(--fuente-mono);
-  font-size: 1.35rem;
-  font-weight: 500;
-  color: var(--texto-primario);
-  line-height: 1;
-  transition: color var(--trans-normal);
+  font-family: var(--fuente-mono); font-size: 1.38rem;
+  font-weight: 500; color: var(--texto-1); line-height: 1;
+  transition: color var(--t-normal);
 }
 
-.tarjeta-sub {
-  font-size: 0.72rem;
-  color: var(--texto-terciario);
-  line-height: 1.4;
-}
+.tarjeta-sub { font-size: 0.71rem; color: var(--texto-3); line-height: 1.45; }
 
-/* --- Variantes de tarjeta por tipo --- */
+/* --- Tarjeta principal — glassmorphism --- */
 .tarjeta--primaria {
-  border-color: rgba(163,230,53,0.2);
-  background: linear-gradient(135deg, var(--color-superficie), rgba(163,230,53,0.04));
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border-color: var(--borde-acento);
+  box-shadow: var(--sombra-menta), 0 0 50px rgba(110,231,183,0.05);
 }
-.tarjeta--primaria .tarjeta-valor { color: var(--color-primario); }
+.tarjeta--primaria .tarjeta-valor {
+  color: var(--menta);
+  text-shadow: 0 0 18px rgba(110,231,183,0.25);
+  font-size: 1.5rem;
+}
 
+/* --- Tarjeta utilidad --- */
 .tarjeta--utilidad {
-  border-color: rgba(163,230,53,0.15);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border-color: rgba(110,231,183,0.15);
 }
-.tarjeta--utilidad .tarjeta-valor { color: var(--color-exito); }
+.tarjeta--utilidad .tarjeta-valor { color: var(--menta-dim); }
 
-.tarjeta--costo .tarjeta-valor    { color: var(--texto-secundario); }
-.tarjeta--margen .tarjeta-valor   { color: var(--color-info); }
-.tarjeta--fiado .tarjeta-valor    { color: var(--color-fiado); }
-.tarjeta--contado .tarjeta-valor  { color: var(--color-contado); }
+.tarjeta--costo .tarjeta-valor   { color: var(--texto-2); }
+.tarjeta--margen .tarjeta-valor  { color: var(--cielo); }
+.tarjeta--fiado .tarjeta-valor   { color: var(--ambar); }
+.tarjeta--contado .tarjeta-valor { color: var(--menta-dim); }
 
 /* ============================================================
-   GRÁFICO DE BARRAS DIARIAS
+   GRÁFICO DE BARRAS
    ============================================================ */
 .dashboard-grafico-seccion {
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
-  padding: var(--espacio-lg);
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-xl); padding: var(--sp-6);
 }
-
-.grafico-wrapper {
-  overflow-x: auto;
-  margin-top: var(--espacio-sm);
-}
-
-.grafico-canvas {
-  display: block;
-  max-width: 100%;
-  height: 200px;
-  border-radius: var(--radio-sm);
-}
+.grafico-wrapper { overflow-x: auto; margin-top: var(--sp-2); }
+.grafico-canvas { display: block; max-width: 100%; height: 200px; border-radius: var(--r-md); }
 
 /* ============================================================
-   FILA INFERIOR: TABLA + LATERAL
+   FILA INFERIOR
    ============================================================ */
 .dashboard-fila-inferior {
   display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: var(--espacio-lg);
-  align-items: start;
+  grid-template-columns: 1fr 310px;
+  gap: var(--sp-5); align-items: start;
 }
 
-/* --- Tabla de ventas --- */
 .dashboard-tabla-seccion {
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
-  padding: var(--espacio-lg);
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-xl); padding: var(--sp-6);
 }
 
-.tabla-ventas .col-fecha   { min-width: 130px; }
-.tabla-ventas .col-cajero  { min-width: 100px; }
-.tabla-ventas .col-tipo    { width: 90px; }
+.tabla-ventas .col-fecha  { min-width: 130px; }
+.tabla-ventas .col-cajero { min-width: 100px; }
+.tabla-ventas .col-tipo   { width: 90px; }
 .tabla-ventas .col-total,
 .tabla-ventas .col-costo,
 .tabla-ventas .col-utilidad { text-align: right; min-width: 90px; font-family: var(--fuente-mono); }
 
-/* --- Panel lateral derecho --- */
+/* Panel lateral */
 .dashboard-lateral {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-md);
-  position: sticky;
-  top: calc(var(--alto-nav) + var(--espacio-lg));
+  display: flex; flex-direction: column; gap: var(--sp-4);
+  position: sticky; top: calc(var(--alto-nav) + var(--sp-5));
 }
 
 /* ============================================================
-   PANEL DE FIADOS PENDIENTES
+   PANEL FIADOS
    ============================================================ */
 .panel-fiados {
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
-  padding: var(--espacio-lg);
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-xl); padding: var(--sp-5);
 }
 
 .fiados-lista {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 280px;
-  overflow-y: auto;
-  margin-bottom: var(--espacio-md);
+  display: flex; flex-direction: column; gap: 6px;
+  max-height: 260px; overflow-y: auto; margin-bottom: var(--sp-4);
 }
 
 .fiado-item {
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-sm);
-  background: var(--color-fondo-2);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-sm);
-  padding: 8px 10px;
-  transition: border-color var(--trans-rapida);
+  display: flex; align-items: center; gap: var(--sp-2);
+  background: var(--fondo-elevado);
+  border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-lg); padding: 9px 12px;
+  transition: border-color var(--t-fast);
 }
+.fiado-item:hover { border-color: var(--borde-normal); }
 
-.fiado-item:hover { border-color: var(--color-borde-2); }
-
-.fiado-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  overflow: hidden;
-}
-
-.fiado-nombre {
-  font-size: 0.83rem;
-  font-weight: 600;
-  color: var(--texto-primario);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.fiado-tel {
-  font-size: 0.7rem;
-  color: var(--texto-terciario);
-}
-
-.fiado-saldo {
-  font-family: var(--fuente-mono);
-  font-size: 0.82rem;
-  color: var(--color-fiado);
-  flex-shrink: 0;
-}
+.fiado-info { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+.fiado-nombre { font-size: 0.83rem; font-weight: 600; color: var(--texto-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fiado-tel { font-size: 0.69rem; color: var(--texto-3); }
+.fiado-saldo { font-family: var(--fuente-mono); font-size: 0.82rem; color: var(--ambar); flex-shrink: 0; }
 
 .btn-abonar {
-  background: rgba(251,146,60,0.1);
-  border: 1px solid rgba(251,146,60,0.3);
-  border-radius: var(--radio-sm);
-  color: var(--color-fiado);
-  font-size: 0.7rem;
-  font-weight: 700;
-  font-family: var(--fuente-ui);
-  padding: 4px 8px;
-  letter-spacing: 0.04em;
-  transition: background var(--trans-rapida);
-  flex-shrink: 0;
+  background: var(--ambar-bg); border: 1px solid rgba(251,191,36,0.28);
+  border-radius: var(--r-pill); color: var(--ambar);
+  font-size: 0.68rem; font-weight: 700; font-family: var(--fuente-ui);
+  padding: 4px 9px; letter-spacing: 0.04em;
+  transition: background var(--t-fast); flex-shrink: 0;
 }
+.btn-abonar:hover { background: rgba(251,191,36,0.18); }
 
-.btn-abonar:hover { background: rgba(251,146,60,0.2); }
-
-.fiados-vacio {
-  font-size: 0.82rem;
-  color: var(--texto-terciario);
-  text-align: center;
-  padding: var(--espacio-md);
-}
+.fiados-vacio { font-size: 0.82rem; color: var(--texto-3); text-align: center; padding: var(--sp-4); }
 
 .fiados-total-fila {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: var(--espacio-sm);
-  border-top: 1px solid var(--color-borde);
-  font-size: 0.78rem;
-  color: var(--texto-terciario);
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: var(--sp-3); border-top: 1px solid var(--borde-sutil);
+  font-size: 0.77rem; color: var(--texto-3);
 }
-
-.fiados-total-fila strong {
-  font-family: var(--fuente-mono);
-  color: var(--color-fiado);
-  font-size: 0.9rem;
-}
+.fiados-total-fila strong { font-family: var(--fuente-mono); color: var(--ambar); font-size: 0.9rem; }
 
 /* ============================================================
-   PANEL DE BACKUP
+   PANEL BACKUP
    ============================================================ */
 .panel-backup {
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
-  padding: var(--espacio-lg);
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-xl); padding: var(--sp-5);
 }
 
 .backup-info {
-  font-size: 0.75rem;
-  color: var(--texto-terciario);
-  line-height: 1.5;
-  margin-bottom: var(--espacio-sm);
-  padding: 8px 10px;
-  border-radius: var(--radio-sm);
-  background: var(--color-fondo-2);
+  font-size: 0.74rem; color: var(--texto-3); line-height: 1.55;
+  margin-bottom: var(--sp-2); padding: 8px 12px;
+  border-radius: var(--r-md); background: var(--fondo-elevado);
 }
+.backup-info--ok    { color: var(--menta-dim); background: var(--menta-bg); border: 1px solid var(--borde-acento); }
+.backup-info--alerta{ color: var(--ambar); background: var(--ambar-bg); border: 1px solid rgba(251,191,36,0.25); }
 
-.backup-info--ok {
-  color: var(--color-exito);
-  background: rgba(163,230,53,0.06);
-  border: 1px solid rgba(163,230,53,0.15);
-}
+.backup-estado { font-size: 0.77rem; min-height: 20px; margin-bottom: var(--sp-2); transition: opacity var(--t-normal); }
+.backup-estado--exito { color: var(--menta); }
+.backup-estado--error { color: var(--coral); }
+.backup-estado--info  { color: var(--cielo); }
 
-.backup-info--alerta {
-  color: var(--color-advertencia);
-  background: rgba(251,191,36,0.06);
-  border: 1px solid rgba(251,191,36,0.2);
-}
-
-.backup-estado {
-  font-size: 0.78rem;
-  min-height: 20px;
-  margin-bottom: var(--espacio-sm);
-  transition: opacity var(--trans-normal);
-}
-
-.backup-estado--exito { color: var(--color-exito); }
-.backup-estado--error { color: var(--color-critico); }
-.backup-estado--info  { color: var(--color-info); }
-
-.backup-acciones {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-sm);
-  margin-top: var(--espacio-sm);
-}
+.backup-acciones { display: flex; flex-direction: column; gap: var(--sp-2); margin-top: var(--sp-2); }
 
 .btn-backup-manual {
-  background: var(--color-primario);
-  color: var(--texto-invertido);
-  font-family: var(--fuente-ui);
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  padding: 9px 14px;
-  border-radius: var(--radio-sm);
-  transition: opacity var(--trans-rapida);
+  background: linear-gradient(135deg, var(--menta-dim), var(--menta));
+  color: var(--texto-inv); font-family: var(--fuente-ui);
+  font-weight: 700; font-size: 0.79rem; letter-spacing: 0.05em;
+  padding: 9px 16px; border-radius: var(--r-pill);
+  transition: opacity var(--t-fast); box-shadow: var(--sombra-menta);
 }
-
-.btn-backup-manual:hover { opacity: 0.85; }
+.btn-backup-manual:hover { opacity: 0.83; }
 
 .btn-importar {
-  background: transparent;
-  border: 1px solid var(--color-borde-2);
-  border-radius: var(--radio-sm);
-  color: var(--texto-secundario);
-  font-family: var(--fuente-ui);
-  font-weight: 600;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  padding: 9px 14px;
-  transition: color var(--trans-rapida), border-color var(--trans-rapida);
+  background: transparent; border: 1px solid var(--borde-normal);
+  border-radius: var(--r-pill); color: var(--texto-2);
+  font-family: var(--fuente-ui); font-weight: 600; font-size: 0.79rem;
+  letter-spacing: 0.05em; padding: 9px 16px;
+  transition: color var(--t-fast), border-color var(--t-fast);
 }
-
-.btn-importar:hover {
-  color: var(--texto-primario);
-  border-color: var(--texto-secundario);
-}
+.btn-importar:hover { color: var(--texto-1); border-color: var(--borde-fuerte); }
 
 /* ============================================================
-   PANEL DE CIERRE DE CAJA
+   PANEL CIERRE DE CAJA
    ============================================================ */
 .panel-cierre {
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
-  padding: var(--espacio-lg);
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde-sutil);
+  border-radius: var(--r-xl); padding: var(--sp-5);
 }
-
-.cierre-descripcion {
-  font-size: 0.78rem;
-  color: var(--texto-terciario);
-  line-height: 1.5;
-  margin-bottom: var(--espacio-md);
-}
+.cierre-descripcion { font-size: 0.77rem; color: var(--texto-3); line-height: 1.55; margin-bottom: var(--sp-4); }
 
 .btn-cierre-caja {
-  width: 100%;
-  background: var(--color-superficie-2);
-  border: 1px solid var(--color-borde-2);
-  border-radius: var(--radio-sm);
-  color: var(--texto-primario);
-  font-family: var(--fuente-ui);
-  font-weight: 700;
-  font-size: 0.85rem;
-  letter-spacing: 0.06em;
-  padding: 12px;
-  transition: border-color var(--trans-rapida), color var(--trans-rapida), background var(--trans-rapida);
+  width: 100%; background: var(--fondo-elevado);
+  border: 1px solid var(--borde-normal); border-radius: var(--r-lg);
+  color: var(--texto-1); font-family: var(--fuente-ui);
+  font-weight: 700; font-size: 0.85rem; letter-spacing: 0.06em;
+  padding: 13px;
+  transition: border-color var(--t-fast), color var(--t-fast), background var(--t-fast), box-shadow var(--t-fast);
 }
-
 .btn-cierre-caja:hover {
-  border-color: var(--color-primario);
-  color: var(--color-primario);
-  background: var(--color-primario-bg);
+  border-color: var(--borde-acento); color: var(--menta);
+  background: var(--menta-bg); box-shadow: var(--menta-glow);
 }
+.btn-cierre-caja:disabled { opacity: 0.35; cursor: not-allowed; }
 
-.btn-cierre-caja:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* ============================================================
-   MODAL DE ABONO
-   ============================================================ */
+/* Modal abono */
 .modal-caja label {
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--texto-terciario);
-  margin-bottom: 6px;
-  margin-top: var(--espacio-md);
+  display: block; font-size: 0.69rem; font-weight: 700;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--texto-3); margin-bottom: 6px; margin-top: var(--sp-4);
 }
-
 .modal-caja input[type="number"] {
-  width: 100%;
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde-2);
-  border-radius: var(--radio-sm);
-  color: var(--texto-primario);
-  font-family: var(--fuente-mono);
-  font-size: 1.1rem;
-  padding: 10px 12px;
-  transition: border-color var(--trans-rapida);
+  width: 100%; background: var(--fondo-superficie);
+  border: 1px solid var(--borde-normal); border-radius: var(--r-md);
+  color: var(--texto-1); font-family: var(--fuente-mono);
+  font-size: 1.1rem; padding: 10px 14px; transition: border-color var(--t-fast);
 }
-
-.modal-caja input[type="number"]:focus {
-  border-color: var(--color-primario);
-}
+.modal-caja input[type="number"]:focus { border-color: var(--menta-dim); }
 
 /* ============================================================
-   RESPONSIVE DASHBOARD
+   RESPONSIVE
    ============================================================ */
-@media (max-width: 1100px) {
-  .tarjetas-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+@media (max-width: 1100px) { .tarjetas-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 900px) {
-  .dashboard-fila-inferior {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-lateral {
-    position: static;
-  }
+  .dashboard-fila-inferior { grid-template-columns: 1fr; }
+  .dashboard-lateral { position: static; }
 }
-
 @media (max-width: 600px) {
-  .tarjetas-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--espacio-sm);
-  }
-
-  .tarjeta { padding: var(--espacio-md); }
+  .tarjetas-grid { grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+  .tarjeta { padding: var(--sp-4); }
   .tarjeta-valor { font-size: 1.1rem; }
-
-  .dashboard-encabezado {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  .dashboard-encabezado { flex-direction: column; align-items: flex-start; }
 }
