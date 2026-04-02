@@ -252,7 +252,7 @@
     import { inicializarDB, obtenerTodos, obtenerPorId } from "/assets/js/db.js";
     import { getCajeroActivo } from "/assets/js/cajero.js";
     import { iniciarEEFF, calcularTotalFiadosPendientes, generarReporteCierre } from "/assets/js/eeff.js";
-    import { iniciarBackup, ejecutarBackupAutomatico } from "/assets/js/backup.js";
+    import { iniciarBackup } from "/assets/js/backup.js";
 
     async function arrancar() {
       await inicializarDB();
@@ -278,7 +278,6 @@
         if (!confirmado) return;
 
         await generarReporteCierre();
-        await ejecutarBackupAutomatico();
 
         const btn = document.getElementById("btn-cierre-caja");
         if (btn) {

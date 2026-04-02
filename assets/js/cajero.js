@@ -124,15 +124,44 @@ async function _mostrarPanelGestion(resolve) {
   const cajeros = await obtenerTodos("cajeros");
   const lista = document.getElementById("cajero-lista");
 
-  lista.innerHTML = cajeros.length
-    ? cajeros.map((c) => `
-        <div class="cajero-gestion-fila">
-          <span>${c.nombre}</span>
-          <button class="btn-eliminar-cajero" data-id="${c.id}">Eliminar</button>
-        </div>`
-      ).join("")
-    : `<p class="cajero-vacio">No hay cajeros registrados.</p>`;
+  lista.innerHTML = `
+    <button class="btn-volver-cajeros" id="btn-volver-lista">← Volver</button>
+    ${cajeros.length
+      ? cajeros.map((c) => `
+          <div class="cajero-gestion-fila">
+            <span>${c.nombre}</span>
+            <button class="btn-eliminar-cajero" data-id="${c.id}">Eliminar</button>
+          </div>`
+        ).join("")
+      : `<p class="cajero-vacio">No hay cajeros registrados.</p>`
+    }
+  `;
 
+  // --- Botón volver — recarga la lista de selección ---
+  document.getElementById("btn-volver-lista").addEventListener("click", async () => {
+    const cajeros = await obtenerTodos("cajeros");
+    lista.innerHTML = cajeros.length
+      ? cajeros.map((c) => `
+          <button class="cajero-opcion" data-id="${c.id}" data-nombre="${c.nombre}">
+            <span class="cajero-inicial">${c.nombre.charAt(0).toUpperCase()}</span>
+            <span class="cajero-nombre">${c.nombre}</span>
+          </button>`
+        ).join("")
+      : `<p class="cajero-vacio">No hay cajeros registrados. Agrega uno abajo.</p>`;
+
+    // --- Reactiva los listeners de selección ---
+    lista.querySelectorAll(".cajero-opcion").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const cajero = { id: btn.dataset.id, nombre: btn.dataset.nombre };
+        setCajeroActivo(cajero);
+        _cerrarModal();
+        _mostrarBienvenida(cajero.nombre);
+        resolve();
+      });
+    });
+  });
+
+  // --- Eliminar cajero ---
   lista.querySelectorAll(".btn-eliminar-cajero").forEach((btn) => {
     btn.addEventListener("click", async () => {
       await eliminar("cajeros", Number(btn.dataset.id));
@@ -140,21 +169,6 @@ async function _mostrarPanelGestion(resolve) {
     });
   });
 }
-
-function _cerrarModal() {
-  const modal = document.getElementById("modal-cajero");
-  if (modal) modal.remove();
-}
-
-function _mostrarBienvenida(nombre) {
-  const toast = document.createElement("div");
-  toast.className = "cajero-toast";
-  toast.textContent = `👋 Buen día, ${nombre}`;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.classList.add("cajero-toast--salir"), 2500);
-  setTimeout(() => toast.remove(), 3200);
-}
-
 export {
   iniciarGestionCajero,
   getCajeroActivo,

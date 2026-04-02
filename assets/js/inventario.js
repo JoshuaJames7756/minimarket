@@ -340,6 +340,11 @@ function _bindEventosInventario() {
     });
   }
 
+  // Agregar al final de _bindEventosInventario() en inventario.js
+document.addEventListener("filtrar-categoria", (e) => {
+  _renderizarTablaProductosDirecto(e.detail.productos);
+});
+
   // --- Botón agregar nuevo producto ---
   const btnNuevo = document.getElementById("btn-nuevo-producto");
   if (btnNuevo) btnNuevo.addEventListener("click", () => abrirFormularioProducto());
@@ -358,6 +363,11 @@ function _bindEventosInventario() {
       await _cargarProveedoresEnSelect();
     });
   }
+}
+
+function _renderizarTablaProductosDirecto(productos) {
+  // misma lógica que _renderizarTablaProductos pero recibe array directo
+  // sin hacer fetch a la DB
 }
 
 // --- Actualiza el select de proveedores en el formulario de producto ---

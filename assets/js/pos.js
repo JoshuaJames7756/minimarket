@@ -238,11 +238,10 @@ function _iniciarDeteccionNativa(video) {
 
 // --- Estrategia B: ZXing fallback (PC Windows/Linux) ---
 async function _iniciarStreamZXing() {
-  // Carga ZXing dinámicamente solo cuando se necesita (lazy load)
   if (!window.ZXingBrowser) {
     await new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/index.min.js";
+      script.src = "https://unpkg.com/@zxing/browser@latest";
       script.onload = resolve;
       script.onerror = () => reject(new Error("No se pudo cargar ZXing"));
       document.head.appendChild(script);
@@ -269,20 +268,19 @@ async function _iniciarStreamZXing() {
     video.srcObject = stream;
 
     const codeReader = new ZXingBrowser.BrowserMultiFormatReader();
-
-    // Guarda referencia para poder hacer reset al cerrar
     window._zxingReader = codeReader;
 
+    let yaProcesado = false; // ← flag para evitar doble disparo
+
     codeReader.decodeFromStream(stream, video, (result, err) => {
+      if (yaProcesado) return; // ignorar callbacks posteriores
       if (result) {
+        yaProcesado = true;
         const codigo = result.getText();
         console.log("[Cámara] Código detectado (ZXing):", codigo);
-        codeReader.reset();
-        window._zxingReader = null;
         _cerrarModalCamara();
         _procesarCodigoBarra(codigo);
       }
-      // Los errores de frames vacíos son normales en ZXing — ignorar
     });
 
   } catch (error) {
@@ -370,6 +368,8 @@ function agregarAlCarrito(producto) {
 
   _renderizarCarrito();
 }
+
+
 
 function cambiarCantidad(productoId, nuevaCantidad) {
   const item = carrito.find((i) => i.producto.id === productoId);
@@ -481,6 +481,13 @@ function _renderizarCarrito() {
   const total = calcularTotal();
   if (totalEl) totalEl.textContent = `Bs. ${total.toFixed(2)}`;
   if (btnCobrar) btnCobrar.disabled = false;
+
+  // ← Agrega aquí
+  const itemsCount = document.getElementById("pos-items-count");
+  if (itemsCount) {
+    const totalItems = carrito.reduce((acc, i) => acc + i.cantidad, 0);
+    itemsCount.textContent = `${totalItems} producto${totalItems !== 1 ? "s" : ""}`;
+  }
 }
 
 // ============================================================
@@ -736,3 +743,4 @@ export {
   limpiarCarrito,
   calcularTotal,
 };
+

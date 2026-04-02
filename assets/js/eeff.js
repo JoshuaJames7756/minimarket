@@ -6,6 +6,7 @@
 // ============================================================
 
 import { obtenerVentasPorRango, obtenerTodos } from "./db.js";
+import { ejecutarBackupAutomatico } from "./backup.js";
 
 // ============================================================
 // INICIALIZACIÓN
@@ -196,10 +197,13 @@ function _renderizarTablaVentas(ventas) {
 // Dibuja barras simples con Canvas API sin librerías externas.
 // ============================================================
 function _renderizarGraficoVentasDiarias(ventas, anio, mes) {
-  const canvas = document.getElementById("eeff-grafico-ventas");
+  const canvas = document.getElementById("eeff-grafico-ventas"); // ← primero
   if (!canvas) return;
 
+  canvas.width = canvas.parentElement.offsetWidth || 900; // ← después
+
   const ctx = canvas.getContext("2d");
+  // ... resto igual
   const diasEnMes = new Date(anio, mes, 0).getDate();
 
   // --- Agrupa ventas por día ---
@@ -350,6 +354,7 @@ async function generarReporteCierre() {
     </html>
   `);
   ventanaImpresion.document.close();
+  await ejecutarBackupAutomatico();
 }
 
 // ============================================================

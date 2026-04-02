@@ -260,19 +260,13 @@ function obtenerCreditosPorCliente(clienteId) {
   });
 }
 
-function reducirStock(productoId, cantidad) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const producto = await obtenerPorId("productos", productoId);
-      if (!producto) return reject(new Error("Producto no encontrado"));
-      if (producto.stock < cantidad) return reject(new Error("Stock insuficiente"));
-      producto.stock -= cantidad;
-      await actualizar("productos", producto);
-      resolve(producto.stock);
-    } catch (error) {
-      reject(error);
-    }
-  });
+async function reducirStock(productoId, cantidad) {
+  const producto = await obtenerPorId("productos", productoId);
+  if (!producto) throw new Error("Producto no encontrado");
+  if (producto.stock < cantidad) throw new Error("Stock insuficiente");
+  producto.stock -= cantidad;
+  await actualizar("productos", producto);
+  return producto.stock;
 }
 
 // ============================================================

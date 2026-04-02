@@ -5,7 +5,7 @@
 // El backup automático se dispara al hacer cierre de caja.
 // ============================================================
 
-import { exportarDB } from "./db.js";
+import { exportarDB, agregar, eliminar, obtenerTodos } from "./db.js";
 
 // ============================================================
 // BACKUP MANUAL
@@ -81,7 +81,6 @@ function iniciarImportacion() {
 // IMPORTAR DATOS A INDEXEDDB
 // ============================================================
 async function _importarDatos(datos) {
-  const { agregar, eliminar, obtenerTodos } = await import("./db.js");
   const stores = ["productos", "ventas", "clientes", "creditos", "proveedores"];
 
   for (const storeName of stores) {
