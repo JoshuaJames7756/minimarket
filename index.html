@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Punto de Venta — Minimercado Control-Total" />
+  <meta name="theme-color" content="#0a0a0f" />
+
+  <title>POS — Minimercado</title>
+
+  <!-- =====================================================
+    Iconografía y PWA
+  ====================================================== -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- =====================================================
+    Tipografías: DM Mono (números/códigos) + Syne (UI)
+  ====================================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- =====================================================
+    Estilos
+  ====================================================== -->
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="/assets/css/pos.css" />
+</head>
+
+<body class="pagina-pos">
+
+  <!-- =====================================================
+    BARRA DE NAVEGACIÓN SUPERIOR
+  ====================================================== -->
+  <header class="nav-superior" role="banner">
+    <div class="nav-marca">
+      <span class="nav-logo">▣</span>
+      <span class="nav-nombre">Minimercado</span>
+    </div>
+
+    <nav class="nav-links" role="navigation" aria-label="Navegación principal">
+      <a href="/" class="nav-link nav-link--activo" aria-current="page">
+        <span class="nav-link-icono">⊞</span> POS
+      </a>
+      <a href="/inventario.html" class="nav-link">
+        <span class="nav-link-icono">◫</span> Inventario
+      </a>
+      <a href="/dashboard.html" class="nav-link">
+        <span class="nav-link-icono">◈</span> Dashboard
+      </a>
+    </nav>
+
+    <div class="nav-sesion">
+      <!-- Cajero activo — llenado por cajero.js -->
+      <div class="cajero-badge" id="cajero-badge">
+        <span class="cajero-badge-icono">◉</span>
+        <span id="cajero-badge-nombre">Cargando...</span>
+      </div>
+      <button class="btn-cerrar-sesion" id="btn-cerrar-sesion" title="Cambiar cajero">↩</button>
+    </div>
+  </header>
+
+  <!-- =====================================================
+    CONTENIDO PRINCIPAL DEL POS
+  ====================================================== -->
+  <main class="pos-layout" role="main">
+
+    <!-- ─────────────────────────────────────────────────
+      COLUMNA IZQUIERDA: Búsqueda + Carrito
+    ──────────────────────────────────────────────────── -->
+    <section class="pos-columna-izq" aria-label="Carrito de venta">
+
+      <!-- Buscador / Entrada de código -->
+      <div class="pos-buscador-wrapper">
+        <div class="pos-buscador-grupo">
+          <label for="pos-busqueda" class="pos-buscador-label">
+            BUSCAR PRODUCTO
+          </label>
+          <div class="pos-buscador-controles">
+            <div class="pos-input-wrapper">
+              <span class="pos-input-icono">⌕</span>
+              <input
+                type="text"
+                id="pos-busqueda"
+                class="pos-input-busqueda"
+                placeholder="Nombre o código de barras..."
+                autocomplete="off"
+                autocorrect="off"
+                spellcheck="false"
+                aria-label="Buscar producto por nombre o código"
+              />
+            </div>
+            <button
+              id="pos-btn-camara"
+              class="btn-camara"
+              title="Escanear con cámara (Chrome/Edge)"
+              aria-label="Abrir cámara para escanear código de barras"
+            >
+              ◎
+            </button>
+          </div>
+        </div>
+
+        <!-- Indicador de modo escáner USB -->
+        <div class="pos-modo-escaner" id="pos-modo-escaner" aria-live="polite">
+          <span class="escaner-dot"></span>
+          <span class="escaner-texto">Listo para escáner USB</span>
+        </div>
+      </div>
+
+      <!-- Carrito de venta -->
+      <div class="pos-carrito-header">
+        <h2 class="pos-carrito-titulo">VENTA ACTUAL</h2>
+        <button
+          id="pos-btn-limpiar"
+          class="btn-limpiar-carrito"
+          title="Vaciar carrito"
+          aria-label="Vaciar carrito"
+        >
+          ✕ Limpiar
+        </button>
+      </div>
+
+      <div
+        id="pos-carrito"
+        class="pos-carrito"
+        role="list"
+        aria-label="Productos en el carrito"
+        aria-live="polite"
+      >
+        <!-- Llenado dinámicamente por pos.js -->
+        <div class="carrito-vacio">
+          <p>Escanea o busca un producto para comenzar</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ─────────────────────────────────────────────────
+      COLUMNA DERECHA: Resumen + Cobro
+    ──────────────────────────────────────────────────── -->
+    <aside class="pos-columna-der" aria-label="Resumen y cobro">
+
+      <!-- Panel de totales -->
+      <div class="pos-panel-total">
+        <div class="pos-total-label">TOTAL A COBRAR</div>
+        <div
+          id="pos-total"
+          class="pos-total-valor"
+          aria-live="polite"
+          aria-label="Total a cobrar"
+        >
+          Bs. 0.00
+        </div>
+
+        <div class="pos-items-count">
+          <span id="pos-items-count">0 productos</span>
+        </div>
+      </div>
+
+      <!-- Botón principal de cobro -->
+      <button
+        id="pos-btn-cobrar"
+        class="btn-cobrar"
+        disabled
+        aria-label="Proceder al cobro"
+      >
+        <span class="btn-cobrar-icono">◈</span>
+        COBRAR
+      </button>
+
+      <!-- Acceso rápido a fiados del día -->
+      <div class="pos-panel-fiados">
+        <div class="pos-panel-fiados-header">
+          <span>FIADOS PENDIENTES</span>
+          <a href="/dashboard.html#fiados" class="link-ver-todos">Ver todos →</a>
+        </div>
+        <div id="pos-fiados-lista" class="pos-fiados-lista">
+          <!-- Llenado por pos.js al iniciar -->
+        </div>
+      </div>
+
+      <!-- Atajos de teclado -->
+      <div class="pos-atajos" aria-label="Atajos de teclado">
+        <div class="atajo-item">
+          <kbd>F1</kbd> <span>Nuevo producto</span>
+        </div>
+        <div class="atajo-item">
+          <kbd>F2</kbd> <span>Abrir cámara</span>
+        </div>
+        <div class="atajo-item">
+          <kbd>Enter</kbd> <span>Cobrar</span>
+        </div>
+        <div class="atajo-item">
+          <kbd>Esc</kbd> <span>Limpiar</span>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- =====================================================
+    SERVICE WORKER — Registro PWA
+  ====================================================== -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then(() => console.log("✅ Service Worker registrado."))
+        .catch((err) => console.error("❌ Error SW:", err));
+    }
+  </script>
+
+  <!-- =====================================================
+    MÓDULOS JS
+  ====================================================== -->
+  <script type="module">
+    import { inicializarDB } from "/assets/js/db.js";
+    import { iniciarGestionCajero, getCajeroActivo, cerrarSesionCajero } from "/assets/js/cajero.js";
+    import { iniciarPOS } from "/assets/js/pos.js";
+
+    // --- Inicialización en cascada ---
+    async function arrancar() {
+      await inicializarDB();
+      await iniciarGestionCajero();
+
+      // --- Muestra el nombre del cajero activo en el badge ---
+      const cajero = getCajeroActivo();
+      if (cajero) {
+        document.getElementById("cajero-badge-nombre").textContent = cajero.nombre;
+      }
+
+      iniciarPOS();
+
+      // --- Cierre de sesión del cajero ---
+      document.getElementById("btn-cerrar-sesion").addEventListener("click", () => {
+        const confirmado = confirm("¿Cambiar de cajero? La sesión actual se cerrará.");
+        if (confirmado) {
+          cerrarSesionCajero();
+          location.reload();
+        }
+      });
+
+      // --- Atajos de teclado globales ---
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "F1") {
+          e.preventDefault();
+          window.location.href = "/inventario.html?nuevo=1";
+        }
+        if (e.key === "F2") {
+          e.preventDefault();
+          document.getElementById("pos-btn-camara")?.click();
+        }
+        if (e.key === "Escape") {
+          document.getElementById("pos-btn-limpiar")?.click();
+        }
+        // Enter solo si el foco NO está en el input de búsqueda
+        if (e.key === "Enter" && document.activeElement?.id !== "pos-busqueda") {
+          const btnCobrar = document.getElementById("pos-btn-cobrar");
+          if (btnCobrar && !btnCobrar.disabled) btnCobrar.click();
+        }
+      });
+    }
+
+    arrancar().catch(console.error);
+  </script>
+
+</body>
+</html>

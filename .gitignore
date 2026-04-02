@@ -1,0 +1,7 @@
+# JVSoftware Project - Minimercado Control-Total
+node_modules/
+.env
+.vercel
+.vscode/
+Thumbs.db
+.DS_Store

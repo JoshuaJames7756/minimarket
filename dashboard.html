@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dashboard financiero — Minimercado Control-Total" />
+  <meta name="theme-color" content="#0a0a0f" />
+
+  <title>Dashboard — Minimercado</title>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="/assets/css/dashboard.css" />
+</head>
+
+<body class="pagina-dashboard">
+
+  <!-- =====================================================
+    BARRA DE NAVEGACIÓN SUPERIOR
+  ====================================================== -->
+  <header class="nav-superior" role="banner">
+    <div class="nav-marca">
+      <span class="nav-logo">▣</span>
+      <span class="nav-nombre">Minimercado</span>
+    </div>
+
+    <nav class="nav-links" role="navigation" aria-label="Navegación principal">
+      <a href="/" class="nav-link">
+        <span class="nav-link-icono">⊞</span> POS
+      </a>
+      <a href="/inventario.html" class="nav-link">
+        <span class="nav-link-icono">◫</span> Inventario
+      </a>
+      <a href="/dashboard.html" class="nav-link nav-link--activo" aria-current="page">
+        <span class="nav-link-icono">◈</span> Dashboard
+      </a>
+    </nav>
+
+    <div class="nav-sesion">
+      <div class="cajero-badge" id="cajero-badge">
+        <span class="cajero-badge-icono">◉</span>
+        <span id="cajero-badge-nombre">—</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================
+    CONTENIDO PRINCIPAL DEL DASHBOARD
+  ====================================================== -->
+  <main class="dashboard-layout" role="main">
+
+    <!-- ─────────────────────────────────────────────────
+      ENCABEZADO DEL PERÍODO
+    ──────────────────────────────────────────────────── -->
+    <div class="dashboard-encabezado">
+      <div class="dashboard-titulo-bloque">
+        <h1 class="dashboard-titulo">ESTADOS FINANCIEROS</h1>
+        <p id="eeff-titulo-periodo" class="dashboard-periodo">Cargando...</p>
+      </div>
+
+      <!-- Filtro de período -->
+      <div class="dashboard-filtro" role="search" aria-label="Filtrar por período">
+        <select id="eeff-filtro-mes" class="filtro-select" aria-label="Mes">
+          <option value="01">Enero</option>
+          <option value="02">Febrero</option>
+          <option value="03">Marzo</option>
+          <option value="04">Abril</option>
+          <option value="05">Mayo</option>
+          <option value="06">Junio</option>
+          <option value="07">Julio</option>
+          <option value="08">Agosto</option>
+          <option value="09">Septiembre</option>
+          <option value="10">Octubre</option>
+          <option value="11">Noviembre</option>
+          <option value="12">Diciembre</option>
+        </select>
+        <select id="eeff-filtro-anio" class="filtro-select" aria-label="Año">
+          <!-- Llenado por eeff.js -->
+        </select>
+        <button id="eeff-btn-filtrar" class="btn-filtrar">Filtrar</button>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────────
+      TARJETAS DE RESUMEN FINANCIERO
+    ──────────────────────────────────────────────────── -->
+    <section class="tarjetas-grid" aria-label="Resumen financiero">
+
+      <article class="tarjeta tarjeta--primaria" aria-label="Total de ventas">
+        <div class="tarjeta-etiqueta">VENTAS TOTALES</div>
+        <div id="eeff-total-ventas" class="tarjeta-valor" aria-live="polite">—</div>
+        <div class="tarjeta-sub">Ingresos brutos del período</div>
+      </article>
+
+      <article class="tarjeta tarjeta--costo" aria-label="Costo total">
+        <div class="tarjeta-etiqueta">COSTO TOTAL</div>
+        <div id="eeff-total-costo" class="tarjeta-valor" aria-live="polite">—</div>
+        <div class="tarjeta-sub">Precio de costo de lo vendido</div>
+      </article>
+
+      <article class="tarjeta tarjeta--utilidad" aria-label="Utilidad bruta">
+        <div class="tarjeta-etiqueta">UTILIDAD BRUTA</div>
+        <div id="eeff-utilidad-bruta" class="tarjeta-valor" aria-live="polite">—</div>
+        <div class="tarjeta-sub">Ventas − Costo</div>
+      </article>
+
+      <article class="tarjeta tarjeta--margen" aria-label="Margen bruto">
+        <div class="tarjeta-etiqueta">MARGEN BRUTO</div>
+        <div id="eeff-margen-bruto" class="tarjeta-valor" aria-live="polite">—</div>
+        <div class="tarjeta-sub">Porcentaje de ganancia</div>
+      </article>
+
+      <article class="tarjeta" aria-label="Número de transacciones">
+        <div class="tarjeta-etiqueta">TRANSACCIONES</div>
+        <div id="eeff-transacciones" class="tarjeta-valor" aria-live="polite">—</div>
+        <div class="tarjeta-sub">Ventas registradas</div>
+      </article>
+
+      <article class="tarjeta" aria-label="Ticket promedio">
+        <div class="tarjeta-etiqueta">TICKET PROMEDIO</div>
+        <div id="eeff-ticket-promedio" class="tarjeta-valor" aria-live="polite">—</div>
+        <div class="tarjeta-sub">Venta promedio por transacción</div>
+      </article>
+
+      <article class="tarjeta tarjeta--contado" aria-label="Total al contado">
+        <div class="tarjeta-etiqueta">AL CONTADO</div>
+        <div id="eeff-total-contado" class="tarjeta-valor" aria-live="polite">—</div>
+        <div class="tarjeta-sub">Ventas cobradas</div>
+      </article>
+
+      <article class="tarjeta tarjeta--fiado" aria-label="Total fiado">
+        <div class="tarjeta-etiqueta">FIADO (CRÉDITO)</div>
+        <div id="eeff-total-fiado" class="tarjeta-valor" aria-live="polite">—</div>
+        <div class="tarjeta-sub">Ventas pendientes de cobro</div>
+      </article>
+
+    </section>
+
+    <!-- ─────────────────────────────────────────────────
+      GRÁFICO DE VENTAS DIARIAS
+    ──────────────────────────────────────────────────── -->
+    <section class="dashboard-grafico-seccion" aria-label="Gráfico de ventas diarias">
+      <h2 class="seccion-titulo">VENTAS DIARIAS</h2>
+      <div class="grafico-wrapper">
+        <canvas
+          id="eeff-grafico-ventas"
+          class="grafico-canvas"
+          width="900"
+          height="200"
+          aria-label="Gráfico de barras de ventas por día del mes"
+          role="img"
+        ></canvas>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────
+      FILA INFERIOR: Tabla de ventas + Fiados + Backup
+    ──────────────────────────────────────────────────── -->
+    <div class="dashboard-fila-inferior">
+
+      <!-- Tabla detallada de ventas -->
+      <section class="dashboard-tabla-seccion" aria-label="Detalle de ventas">
+        <h2 class="seccion-titulo">DETALLE DE VENTAS</h2>
+        <div class="tabla-wrapper">
+          <table class="tabla-ventas" role="table">
+            <thead>
+              <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">Cajero</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Total</th>
+                <th scope="col">Costo</th>
+                <th scope="col">Utilidad</th>
+              </tr>
+            </thead>
+            <tbody id="eeff-tabla-ventas-body" aria-live="polite">
+              <tr>
+                <td colspan="6" class="tabla-vacia">Cargando datos...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Panel lateral derecho -->
+      <aside class="dashboard-lateral">
+
+        <!-- Fiados pendientes -->
+        <section id="fiados" class="panel-fiados" aria-label="Fiados pendientes">
+          <h2 class="seccion-titulo">FIADOS PENDIENTES</h2>
+          <div id="dashboard-fiados-lista" class="fiados-lista" aria-live="polite">
+            <!-- Llenado por eeff.js -->
+          </div>
+          <div class="fiados-total-fila">
+            <span>Total pendiente:</span>
+            <strong id="fiados-total-pendiente" aria-live="polite">Bs. 0.00</strong>
+          </div>
+        </section>
+
+        <!-- Panel de backup -->
+        <section class="panel-backup" aria-label="Gestión de backups">
+          <h2 class="seccion-titulo">BACKUP DE DATOS</h2>
+          <div id="backup-ultimo" class="backup-info">Verificando...</div>
+          <div id="backup-estado" class="backup-estado" aria-live="polite"></div>
+
+          <div class="backup-acciones">
+            <button id="btn-backup-manual" class="btn-backup-manual">
+              ↓ Descargar backup
+            </button>
+            <button id="btn-importar-backup" class="btn-importar">
+              ↑ Importar backup
+            </button>
+          </div>
+        </section>
+
+        <!-- Cierre de caja -->
+        <section class="panel-cierre" aria-label="Cierre de caja">
+          <h2 class="seccion-titulo">CIERRE DE CAJA</h2>
+          <p class="cierre-descripcion">
+            Genera el reporte del día e inicia el backup automático.
+          </p>
+          <button id="btn-cierre-caja" class="btn-cierre-caja">
+            ◈ Cerrar caja del día
+          </button>
+        </section>
+
+      </aside>
+    </div>
+
+  </main>
+
+  <!-- =====================================================
+    SERVICE WORKER
+  ====================================================== -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(console.error);
+    }
+  </script>
+
+  <!-- =====================================================
+    MÓDULOS JS
+  ====================================================== -->
+  <script type="module">
+    import { inicializarDB, obtenerTodos, obtenerPorId } from "/assets/js/db.js";
+    import { getCajeroActivo } from "/assets/js/cajero.js";
+    import { iniciarEEFF, calcularTotalFiadosPendientes, generarReporteCierre } from "/assets/js/eeff.js";
+    import { iniciarBackup, ejecutarBackupAutomatico } from "/assets/js/backup.js";
+
+    async function arrancar() {
+      await inicializarDB();
+
+      // --- Badge del cajero activo ---
+      const cajero = getCajeroActivo();
+      const badgeNombre = document.getElementById("cajero-badge-nombre");
+      if (badgeNombre) badgeNombre.textContent = cajero?.nombre ?? "—";
+
+      // --- Inicializa módulos del dashboard ---
+      await iniciarEEFF();
+      iniciarBackup();
+
+      // --- Carga fiados pendientes ---
+      await _cargarFiados();
+
+      // --- Botón cierre de caja ---
+      document.getElementById("btn-cierre-caja")?.addEventListener("click", async () => {
+        const confirmado = confirm(
+          "¿Confirmar cierre de caja del día?\n\n" +
+          "Se generará el reporte de cierre y se iniciará el backup automático."
+        );
+        if (!confirmado) return;
+
+        await generarReporteCierre();
+        await ejecutarBackupAutomatico();
+
+        const btn = document.getElementById("btn-cierre-caja");
+        if (btn) {
+          btn.textContent = "✅ Caja cerrada";
+          btn.disabled = true;
+        }
+      });
+    }
+
+    // --- Carga la lista de clientes con saldo pendiente ---
+    async function _cargarFiados() {
+      const lista = document.getElementById("dashboard-fiados-lista");
+      const totalEl = document.getElementById("fiados-total-pendiente");
+      if (!lista) return;
+
+      const clientes = await obtenerTodos("clientes");
+      const conDeuda = clientes.filter((c) => (c.saldo_pendiente || 0) > 0);
+
+      if (!conDeuda.length) {
+        lista.innerHTML = `<p class="fiados-vacio">✅ Sin fiados pendientes</p>`;
+        if (totalEl) totalEl.textContent = "Bs. 0.00";
+        return;
+      }
+
+      lista.innerHTML = conDeuda
+        .sort((a, b) => b.saldo_pendiente - a.saldo_pendiente)
+        .map(
+          (c) => `
+          <div class="fiado-item">
+            <div class="fiado-info">
+              <span class="fiado-nombre">${c.nombre}</span>
+              <span class="fiado-tel">${c.telefono || "Sin tel."}</span>
+            </div>
+            <div class="fiado-saldo">Bs. ${c.saldo_pendiente.toFixed(2)}</div>
+            <button class="btn-abonar" data-id="${c.id}" data-saldo="${c.saldo_pendiente}">
+              Abonar
+            </button>
+          </div>`
+        )
+        .join("");
+
+      // --- Enlaza botones de abono ---
+      lista.querySelectorAll(".btn-abonar").forEach((btn) => {
+        btn.addEventListener("click", () => _abrirModalAbono(Number(btn.dataset.id), parseFloat(btn.dataset.saldo)));
+      });
+
+      // --- Total pendiente ---
+      const total = await calcularTotalFiadosPendientes();
+      if (totalEl) totalEl.textContent = `Bs. ${total.toFixed(2)}`;
+    }
+
+    // --- Modal de abono a fiado ---
+    async function _abrirModalAbono(clienteId, saldoActual) {
+      const { obtenerPorId, agregar, actualizar } = await import("/assets/js/db.js");
+      const cliente = await obtenerPorId("clientes", clienteId);
+      if (!cliente) return;
+
+      const modal = document.createElement("div");
+      modal.className = "modal-overlay";
+      modal.innerHTML = `
+        <div class="modal-caja">
+          <h3>Registrar abono</h3>
+          <p>Cliente: <strong>${cliente.nombre}</strong></p>
+          <p>Saldo actual: <strong>Bs. ${saldoActual.toFixed(2)}</strong></p>
+          <label>Monto del abono (Bs.)</label>
+          <input type="number" id="input-abono" min="0.50" max="${saldoActual}" step="0.50" placeholder="0.00" />
+          <div class="modal-acciones">
+            <button id="btn-confirmar-abono" class="btn-primario">Confirmar abono</button>
+            <button id="btn-cancelar-abono" class="btn-secundario">Cancelar</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      document.getElementById("btn-cancelar-abono").addEventListener("click", () => modal.remove());
+
+      document.getElementById("btn-confirmar-abono").addEventListener("click", async () => {
+        const monto = parseFloat(document.getElementById("input-abono").value);
+        if (!monto || monto <= 0 || monto > saldoActual) {
+          alert("Ingresa un monto válido.");
+          return;
+        }
+
+        // --- Registra el abono ---
+        await agregar("creditos", {
+          cliente_id: clienteId,
+          monto,
+          fecha: new Date().toISOString(),
+          tipo: "abono",
+          venta_id: null,
+        });
+
+        // --- Actualiza el saldo del cliente ---
+        cliente.saldo_pendiente = Math.max(0, saldoActual - monto);
+        await actualizar("clientes", cliente);
+
+        modal.remove();
+        await _cargarFiados(); // Refresca la lista sin recargar la página
+      });
+    }
+
+    arrancar().catch(console.error);
+  </script>
+
+</body>
+</html>

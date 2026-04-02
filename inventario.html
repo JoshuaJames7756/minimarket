@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Inventario y productos — Minimercado Control-Total" />
+  <meta name="theme-color" content="#0a0a0f" />
+
+  <title>Inventario — Minimercado</title>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="/assets/css/inventario.css" />
+</head>
+
+<body class="pagina-inventario">
+
+  <!-- =====================================================
+    BARRA DE NAVEGACIÓN SUPERIOR
+  ====================================================== -->
+  <header class="nav-superior" role="banner">
+    <div class="nav-marca">
+      <span class="nav-logo">▣</span>
+      <span class="nav-nombre">Minimercado</span>
+    </div>
+
+    <nav class="nav-links" role="navigation" aria-label="Navegación principal">
+      <a href="/" class="nav-link">
+        <span class="nav-link-icono">⊞</span> POS
+      </a>
+      <a href="/inventario.html" class="nav-link nav-link--activo" aria-current="page">
+        <span class="nav-link-icono">◫</span> Inventario
+      </a>
+      <a href="/dashboard.html" class="nav-link">
+        <span class="nav-link-icono">◈</span> Dashboard
+      </a>
+    </nav>
+
+    <div class="nav-sesion">
+      <div class="cajero-badge" id="cajero-badge">
+        <span class="cajero-badge-icono">◉</span>
+        <span id="cajero-badge-nombre">—</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================
+    CONTENIDO PRINCIPAL DEL INVENTARIO
+  ====================================================== -->
+  <main class="inventario-layout" role="main">
+
+    <!-- ─────────────────────────────────────────────────
+      ENCABEZADO + CONTROLES
+    ──────────────────────────────────────────────────── -->
+    <div class="inventario-encabezado">
+      <h1 class="inventario-titulo">INVENTARIO</h1>
+
+      <div class="inventario-controles">
+        <!-- Buscador de productos -->
+        <div class="inv-buscador-wrapper">
+          <span class="inv-buscador-icono">⌕</span>
+          <input
+            type="text"
+            id="inventario-busqueda"
+            class="inv-input-busqueda"
+            placeholder="Buscar producto..."
+            autocomplete="off"
+            aria-label="Buscar en el inventario"
+          />
+        </div>
+
+        <!-- Filtro por categoría -->
+        <select id="inventario-filtro-categoria" class="filtro-select" aria-label="Filtrar por categoría">
+          <option value="">Todas las categorías</option>
+          <!-- Llenado dinámicamente por inventario.js -->
+        </select>
+
+        <!-- Botón nuevo producto -->
+        <button id="btn-nuevo-producto" class="btn-nuevo-producto" aria-label="Agregar nuevo producto">
+          + Nuevo producto
+        </button>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────────
+      ALERTAS DE VENCIMIENTO
+    ──────────────────────────────────────────────────── -->
+    <section class="alertas-seccion" aria-label="Alertas de vencimiento">
+      <div class="alertas-header">
+        <h2 class="seccion-titulo">⚠ ALERTAS DE VENCIMIENTO</h2>
+        <span class="alertas-leyenda">
+          <span class="leyenda-dot leyenda-dot--critico"></span> &lt;15 días
+          <span class="leyenda-dot leyenda-dot--advertencia"></span> &lt;30 días
+          <span class="leyenda-dot leyenda-dot--expirado"></span> Expirado
+        </span>
+      </div>
+      <div
+        id="inventario-alertas"
+        class="alertas-contenedor"
+        aria-live="polite"
+        aria-label="Lista de productos por vencer"
+      >
+        <!-- Llenado por inventario.js -->
+        <p class="alertas-cargando">Verificando vencimientos...</p>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────
+      TABLA DE PRODUCTOS
+    ──────────────────────────────────────────────────── -->
+    <section class="tabla-seccion" aria-label="Lista de productos">
+      <div class="tabla-header">
+        <h2 class="seccion-titulo">PRODUCTOS</h2>
+        <span id="tabla-contador" class="tabla-contador" aria-live="polite">
+          Cargando...
+        </span>
+      </div>
+
+      <div class="tabla-wrapper">
+        <table class="tabla-productos" role="table">
+          <thead>
+            <tr>
+              <th scope="col" class="col-codigo">Código</th>
+              <th scope="col" class="col-nombre">Nombre</th>
+              <th scope="col" class="col-categoria">Categoría</th>
+              <th scope="col" class="col-stock">Stock</th>
+              <th scope="col" class="col-precio">P. Venta</th>
+              <th scope="col" class="col-costo">P. Costo</th>
+              <th scope="col" class="col-vence">Vencimiento</th>
+              <th scope="col" class="col-acciones">Acciones</th>
+            </tr>
+          </thead>
+          <tbody
+            id="inventario-tabla-body"
+            aria-live="polite"
+            aria-label="Productos del inventario"
+          >
+            <tr>
+              <td colspan="8" class="tabla-vacia">Cargando inventario...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────
+      SECCIÓN DE PROVEEDORES
+    ──────────────────────────────────────────────────── -->
+    <section class="proveedores-seccion" aria-label="Gestión de proveedores">
+      <h2 class="seccion-titulo">PROVEEDORES</h2>
+
+      <div class="proveedores-layout">
+
+        <!-- Lista de proveedores -->
+        <div
+          id="proveedores-lista"
+          class="proveedores-lista"
+          aria-live="polite"
+          aria-label="Lista de proveedores"
+        >
+          <!-- Llenado por inventario.js -->
+          <p class="tabla-vacia">Cargando proveedores...</p>
+        </div>
+
+        <!-- Formulario para nuevo proveedor -->
+        <div class="proveedor-nuevo-panel">
+          <h3 class="panel-subtitulo">Nuevo proveedor</h3>
+          <form id="form-nuevo-proveedor" novalidate>
+            <div class="form-fila">
+              <label for="prov-nombre">Nombre *</label>
+              <input
+                type="text"
+                id="prov-nombre"
+                name="nombre"
+                placeholder="Ej: Distribuidora Central"
+                required
+                maxlength="80"
+              />
+            </div>
+            <div class="form-fila">
+              <label for="prov-telefono">Teléfono</label>
+              <input
+                type="tel"
+                id="prov-telefono"
+                name="telefono"
+                placeholder="Ej: 70012345"
+                maxlength="20"
+              />
+            </div>
+            <button type="submit" class="btn-primario">Registrar proveedor</button>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =====================================================
+    SERVICE WORKER
+  ====================================================== -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(console.error);
+    }
+  </script>
+
+  <!-- =====================================================
+    MÓDULOS JS
+  ====================================================== -->
+  <script type="module">
+    import { inicializarDB, obtenerTodos } from "/assets/js/db.js";
+    import { getCajeroActivo } from "/assets/js/cajero.js";
+    import { iniciarInventario, iniciarProveedores } from "/assets/js/inventario.js";
+
+    async function arrancar() {
+      await inicializarDB();
+
+      // --- Badge del cajero activo ---
+      const cajero = getCajeroActivo();
+      const badgeNombre = document.getElementById("cajero-badge-nombre");
+      if (badgeNombre) badgeNombre.textContent = cajero?.nombre ?? "—";
+
+      // --- Inicializa módulos ---
+      await iniciarInventario();
+      await iniciarProveedores();
+
+      // --- Carga categorías únicas en el filtro ---
+      await _cargarCategorias();
+    }
+
+    // --- Rellena el selector de categorías con los valores únicos de la DB ---
+    async function _cargarCategorias() {
+      const productos = await obtenerTodos("productos");
+      const categorias = [...new Set(productos.map((p) => p.categoria).filter(Boolean))].sort();
+
+      const select = document.getElementById("inventario-filtro-categoria");
+      if (!select) return;
+
+      categorias.forEach((cat) => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+      });
+
+      // --- Filtra la tabla al cambiar categoría ---
+      select.addEventListener("change", async () => {
+        const { buscarProductosPorNombre, obtenerTodos } = await import("/assets/js/db.js");
+        const { iniciarInventario } = await import("/assets/js/inventario.js");
+
+        const categoria = select.value;
+        const tbody = document.getElementById("inventario-tabla-body");
+        if (!tbody) return;
+
+        const todos = await obtenerTodos("productos");
+        const filtrados = categoria ? todos.filter((p) => p.categoria === categoria) : todos;
+
+        // --- Actualiza el contador ---
+        const contador = document.getElementById("tabla-contador");
+        if (contador) contador.textContent = `${filtrados.length} producto(s)`;
+
+        // --- Re-renderiza la tabla con los filtrados ---
+        // Se usa el módulo directamente para no duplicar lógica
+        const evento = new CustomEvent("filtrar-categoria", { detail: { productos: filtrados } });
+        document.dispatchEvent(evento);
+      });
+    }
+
+    arrancar().catch(console.error);
+  </script>
+
+</body>
+</html>

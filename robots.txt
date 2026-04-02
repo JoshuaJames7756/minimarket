@@ -1,0 +1,14 @@
+# robots.txt — Minimercado Control-Total
+# JVSoftware | https://jvsoftware.dev
+
+# Permitir todo a bots principales
+User-agent: *
+Allow: /
+
+# Bloquear acceso a archivos de configuración internos
+Disallow: /manifest.json
+Disallow: /sw.js
+Disallow: /.gitignore
+
+# Sitemap
+Sitemap: https://minimercado-control-total.vercel.app/sitemap.xml

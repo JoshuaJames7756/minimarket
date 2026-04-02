@@ -1,0 +1,103 @@
+{
+  "name": "Minimercado Control-Total",
+  "short_name": "Minimercado",
+  "description": "Sistema de punto de venta, inventario y estados financieros para minimercados — funciona sin internet.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "theme_color": "#a3e635",
+  "background_color": "#0a0a0f",
+  "lang": "es-BO",
+  "dir": "ltr",
+  "categories": ["business", "finance", "productivity"],
+
+  "icons": [
+    {
+      "src": "/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+
+  "screenshots": [
+    {
+      "src": "/assets/img/screenshot-pos.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Punto de Venta"
+    },
+    {
+      "src": "/assets/img/screenshot-dashboard.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard Financiero"
+    }
+  ],
+
+  "shortcuts": [
+    {
+      "name": "Punto de Venta",
+      "short_name": "POS",
+      "description": "Abrir el módulo de ventas",
+      "url": "/index.html",
+      "icons": [
+        {
+          "src": "/assets/icons/shortcut-pos.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Ver estados financieros del día",
+      "url": "/dashboard.html",
+      "icons": [
+        {
+          "src": "/assets/icons/shortcut-dashboard.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Inventario",
+      "short_name": "Inventario",
+      "description": "Gestión de productos y stock",
+      "url": "/inventario.html",
+      "icons": [
+        {
+          "src": "/assets/icons/shortcut-inventario.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+
+  "related_applications": [],
+  "prefer_related_applications": false
+}

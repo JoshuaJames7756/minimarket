@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Punto de Venta (página principal) -->
+  <url>
+    <loc>https://minimercado-control-total.vercel.app/index.html</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Dashboard Financiero -->
+  <url>
+    <loc>https://minimercado-control-total.vercel.app/dashboard.html</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Gestión de Inventario -->
+  <url>
+    <loc>https://minimercado-control-total.vercel.app/inventario.html</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>

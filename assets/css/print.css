@@ -1,0 +1,266 @@
+/* ============================================================
+   print.css — Estilos de Impresión
+   Minimercado Control-Total | JVSoftware
+   Optimizado para: recibos de venta (58mm/80mm) y
+   reportes de cierre de caja en hoja completa.
+   ============================================================ */
+
+/* ============================================================
+   RESET DE IMPRESIÓN
+   ============================================================ */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11pt;
+    color: #000;
+    background: #fff;
+    width: 100%;
+  }
+
+  /* Oculta todo excepto el contenido imprimible */
+  body > *:not(.recibo):not(.reporte-cierre) {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   RECIBO DE VENTA
+   Diseñado para impresora térmica de 58mm o 80mm.
+   ============================================================ */
+.recibo {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10pt;
+  color: #000;
+  background: #fff;
+}
+
+.recibo h2 {
+  text-align: center;
+  font-size: 14pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+  border-bottom: 1px dashed #000;
+  padding-bottom: 6px;
+}
+
+.recibo p {
+  font-size: 9pt;
+  line-height: 1.5;
+  color: #000;
+  margin-bottom: 2px;
+}
+
+.recibo hr {
+  border: none;
+  border-top: 1px dashed #000;
+  margin: 6px 0;
+}
+
+/* --- Tabla de ítems --- */
+.recibo table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+  margin: 4px 0;
+}
+
+.recibo thead tr {
+  border-bottom: 1px solid #000;
+  background: transparent;
+}
+
+.recibo thead th {
+  font-size: 8pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 2px 4px;
+  text-align: left;
+  color: #000;
+  letter-spacing: 0;
+}
+
+.recibo thead th:not(:first-child) {
+  text-align: right;
+}
+
+.recibo tbody tr {
+  border-bottom: none;
+  background: transparent;
+}
+
+.recibo tbody tr:hover { background: transparent; }
+
+.recibo tbody td {
+  font-size: 9pt;
+  padding: 3px 4px;
+  color: #000;
+  vertical-align: top;
+}
+
+.recibo tbody td:not(:first-child) {
+  text-align: right;
+}
+
+/* --- Total del recibo --- */
+.recibo-total {
+  text-align: right;
+  font-size: 13pt;
+  font-weight: bold;
+  border-top: 1px solid #000;
+  padding-top: 6px;
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+
+/* --- Pie de recibo --- */
+.recibo-pie {
+  text-align: center;
+  font-size: 9pt;
+  color: #555;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed #000;
+}
+
+/* ============================================================
+   REPORTE DE CIERRE DE CAJA
+   Diseñado para hoja A4 completa.
+   ============================================================ */
+.reporte-cierre {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #000;
+  background: #fff;
+}
+
+.reporte-cierre h2 {
+  font-size: 18pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.reporte-cierre h3 {
+  font-size: 12pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #000;
+  padding-bottom: 4px;
+}
+
+.reporte-cierre p {
+  font-size: 10pt;
+  text-align: center;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.reporte-cierre hr {
+  border: none;
+  border-top: 2px solid #000;
+  margin: 12px 0;
+}
+
+/* --- Tabla de resumen financiero --- */
+.reporte-cierre > table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10pt;
+  margin-bottom: 8px;
+}
+
+.reporte-cierre > table tr {
+  border-bottom: 1px dotted #ccc;
+}
+
+.reporte-cierre > table tr:last-child {
+  border-bottom: 2px solid #000;
+  font-weight: bold;
+  font-size: 11pt;
+}
+
+.reporte-cierre > table td {
+  padding: 5px 4px;
+  color: #000;
+}
+
+.reporte-cierre > table td:last-child {
+  text-align: right;
+  font-weight: bold;
+}
+
+/* --- Tabla de cajeros --- */
+.reporte-cierre table + table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10pt;
+}
+
+.reporte-cierre table + table thead th {
+  font-size: 9pt;
+  text-transform: uppercase;
+  border-bottom: 1px solid #000;
+  padding: 4px;
+  text-align: left;
+  font-weight: bold;
+  background: transparent;
+  color: #000;
+}
+
+.reporte-cierre table + table thead th:not(:first-child) {
+  text-align: right;
+}
+
+.reporte-cierre table + table tbody td {
+  padding: 4px;
+  border-bottom: 1px dotted #ddd;
+  font-size: 10pt;
+  color: #000;
+}
+
+.reporte-cierre table + table tbody td:not(:first-child) {
+  text-align: right;
+}
+
+/* --- Pie del reporte --- */
+.reporte-pie {
+  text-align: center;
+  font-size: 8pt;
+  color: #888;
+  margin-top: 20px;
+  padding-top: 8px;
+  border-top: 1px dashed #ccc;
+}
+
+/* ============================================================
+   CONFIGURACIÓN DE PÁGINA (solo aplica al imprimir)
+   ============================================================ */
+@page {
+  margin: 10mm;
+}
+
+/* Para recibos térmicos (si se define en la configuración de impresión) */
+@page :first {
+  margin-top: 5mm;
+}

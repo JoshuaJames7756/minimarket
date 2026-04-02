@@ -1,0 +1,492 @@
+/* ============================================================
+   dashboard.css — Panel Financiero (Dashboard)
+   Minimercado Control-Total | JVSoftware
+   ============================================================ */
+
+/* ============================================================
+   LAYOUT GENERAL DEL DASHBOARD
+   ============================================================ */
+.dashboard-layout {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xl);
+}
+
+/* ============================================================
+   ENCABEZADO + FILTROS
+   ============================================================ */
+.dashboard-encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--espacio-lg);
+  flex-wrap: wrap;
+}
+
+.dashboard-titulo {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--texto-primario);
+  line-height: 1;
+}
+
+.dashboard-periodo {
+  font-family: var(--fuente-mono);
+  font-size: 0.82rem;
+  color: var(--texto-terciario);
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+}
+
+.dashboard-filtro {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  flex-wrap: wrap;
+}
+
+.btn-filtrar {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde-2);
+  border-radius: var(--radio-sm);
+  color: var(--texto-primario);
+  font-family: var(--fuente-ui);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  padding: 7px 16px;
+  transition: border-color var(--trans-rapida), color var(--trans-rapida);
+}
+
+.btn-filtrar:hover {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+/* ============================================================
+   GRID DE TARJETAS FINANCIERAS
+   ============================================================ */
+.tarjetas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--espacio-md);
+}
+
+.tarjeta {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color var(--trans-normal), transform var(--trans-normal);
+  animation: tarjeta-entrar 400ms ease both;
+}
+
+.tarjeta:hover {
+  border-color: var(--color-borde-2);
+  transform: translateY(-2px);
+}
+
+@keyframes tarjeta-entrar {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Stagger de animación por posición */
+.tarjeta:nth-child(1) { animation-delay: 50ms;  }
+.tarjeta:nth-child(2) { animation-delay: 100ms; }
+.tarjeta:nth-child(3) { animation-delay: 150ms; }
+.tarjeta:nth-child(4) { animation-delay: 200ms; }
+.tarjeta:nth-child(5) { animation-delay: 250ms; }
+.tarjeta:nth-child(6) { animation-delay: 300ms; }
+.tarjeta:nth-child(7) { animation-delay: 350ms; }
+.tarjeta:nth-child(8) { animation-delay: 400ms; }
+
+.tarjeta-etiqueta {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--texto-terciario);
+}
+
+.tarjeta-valor {
+  font-family: var(--fuente-mono);
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--texto-primario);
+  line-height: 1;
+  transition: color var(--trans-normal);
+}
+
+.tarjeta-sub {
+  font-size: 0.72rem;
+  color: var(--texto-terciario);
+  line-height: 1.4;
+}
+
+/* --- Variantes de tarjeta por tipo --- */
+.tarjeta--primaria {
+  border-color: rgba(163,230,53,0.2);
+  background: linear-gradient(135deg, var(--color-superficie), rgba(163,230,53,0.04));
+}
+.tarjeta--primaria .tarjeta-valor { color: var(--color-primario); }
+
+.tarjeta--utilidad {
+  border-color: rgba(163,230,53,0.15);
+}
+.tarjeta--utilidad .tarjeta-valor { color: var(--color-exito); }
+
+.tarjeta--costo .tarjeta-valor    { color: var(--texto-secundario); }
+.tarjeta--margen .tarjeta-valor   { color: var(--color-info); }
+.tarjeta--fiado .tarjeta-valor    { color: var(--color-fiado); }
+.tarjeta--contado .tarjeta-valor  { color: var(--color-contado); }
+
+/* ============================================================
+   GRÁFICO DE BARRAS DIARIAS
+   ============================================================ */
+.dashboard-grafico-seccion {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-lg);
+}
+
+.grafico-wrapper {
+  overflow-x: auto;
+  margin-top: var(--espacio-sm);
+}
+
+.grafico-canvas {
+  display: block;
+  max-width: 100%;
+  height: 200px;
+  border-radius: var(--radio-sm);
+}
+
+/* ============================================================
+   FILA INFERIOR: TABLA + LATERAL
+   ============================================================ */
+.dashboard-fila-inferior {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: var(--espacio-lg);
+  align-items: start;
+}
+
+/* --- Tabla de ventas --- */
+.dashboard-tabla-seccion {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-lg);
+}
+
+.tabla-ventas .col-fecha   { min-width: 130px; }
+.tabla-ventas .col-cajero  { min-width: 100px; }
+.tabla-ventas .col-tipo    { width: 90px; }
+.tabla-ventas .col-total,
+.tabla-ventas .col-costo,
+.tabla-ventas .col-utilidad { text-align: right; min-width: 90px; font-family: var(--fuente-mono); }
+
+/* --- Panel lateral derecho --- */
+.dashboard-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+  position: sticky;
+  top: calc(var(--alto-nav) + var(--espacio-lg));
+}
+
+/* ============================================================
+   PANEL DE FIADOS PENDIENTES
+   ============================================================ */
+.panel-fiados {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-lg);
+}
+
+.fiados-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: var(--espacio-md);
+}
+
+.fiado-item {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  background: var(--color-fondo-2);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-sm);
+  padding: 8px 10px;
+  transition: border-color var(--trans-rapida);
+}
+
+.fiado-item:hover { border-color: var(--color-borde-2); }
+
+.fiado-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.fiado-nombre {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--texto-primario);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fiado-tel {
+  font-size: 0.7rem;
+  color: var(--texto-terciario);
+}
+
+.fiado-saldo {
+  font-family: var(--fuente-mono);
+  font-size: 0.82rem;
+  color: var(--color-fiado);
+  flex-shrink: 0;
+}
+
+.btn-abonar {
+  background: rgba(251,146,60,0.1);
+  border: 1px solid rgba(251,146,60,0.3);
+  border-radius: var(--radio-sm);
+  color: var(--color-fiado);
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--fuente-ui);
+  padding: 4px 8px;
+  letter-spacing: 0.04em;
+  transition: background var(--trans-rapida);
+  flex-shrink: 0;
+}
+
+.btn-abonar:hover { background: rgba(251,146,60,0.2); }
+
+.fiados-vacio {
+  font-size: 0.82rem;
+  color: var(--texto-terciario);
+  text-align: center;
+  padding: var(--espacio-md);
+}
+
+.fiados-total-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--espacio-sm);
+  border-top: 1px solid var(--color-borde);
+  font-size: 0.78rem;
+  color: var(--texto-terciario);
+}
+
+.fiados-total-fila strong {
+  font-family: var(--fuente-mono);
+  color: var(--color-fiado);
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   PANEL DE BACKUP
+   ============================================================ */
+.panel-backup {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-lg);
+}
+
+.backup-info {
+  font-size: 0.75rem;
+  color: var(--texto-terciario);
+  line-height: 1.5;
+  margin-bottom: var(--espacio-sm);
+  padding: 8px 10px;
+  border-radius: var(--radio-sm);
+  background: var(--color-fondo-2);
+}
+
+.backup-info--ok {
+  color: var(--color-exito);
+  background: rgba(163,230,53,0.06);
+  border: 1px solid rgba(163,230,53,0.15);
+}
+
+.backup-info--alerta {
+  color: var(--color-advertencia);
+  background: rgba(251,191,36,0.06);
+  border: 1px solid rgba(251,191,36,0.2);
+}
+
+.backup-estado {
+  font-size: 0.78rem;
+  min-height: 20px;
+  margin-bottom: var(--espacio-sm);
+  transition: opacity var(--trans-normal);
+}
+
+.backup-estado--exito { color: var(--color-exito); }
+.backup-estado--error { color: var(--color-critico); }
+.backup-estado--info  { color: var(--color-info); }
+
+.backup-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  margin-top: var(--espacio-sm);
+}
+
+.btn-backup-manual {
+  background: var(--color-primario);
+  color: var(--texto-invertido);
+  font-family: var(--fuente-ui);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  padding: 9px 14px;
+  border-radius: var(--radio-sm);
+  transition: opacity var(--trans-rapida);
+}
+
+.btn-backup-manual:hover { opacity: 0.85; }
+
+.btn-importar {
+  background: transparent;
+  border: 1px solid var(--color-borde-2);
+  border-radius: var(--radio-sm);
+  color: var(--texto-secundario);
+  font-family: var(--fuente-ui);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  padding: 9px 14px;
+  transition: color var(--trans-rapida), border-color var(--trans-rapida);
+}
+
+.btn-importar:hover {
+  color: var(--texto-primario);
+  border-color: var(--texto-secundario);
+}
+
+/* ============================================================
+   PANEL DE CIERRE DE CAJA
+   ============================================================ */
+.panel-cierre {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-lg);
+}
+
+.cierre-descripcion {
+  font-size: 0.78rem;
+  color: var(--texto-terciario);
+  line-height: 1.5;
+  margin-bottom: var(--espacio-md);
+}
+
+.btn-cierre-caja {
+  width: 100%;
+  background: var(--color-superficie-2);
+  border: 1px solid var(--color-borde-2);
+  border-radius: var(--radio-sm);
+  color: var(--texto-primario);
+  font-family: var(--fuente-ui);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  padding: 12px;
+  transition: border-color var(--trans-rapida), color var(--trans-rapida), background var(--trans-rapida);
+}
+
+.btn-cierre-caja:hover {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+  background: var(--color-primario-bg);
+}
+
+.btn-cierre-caja:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   MODAL DE ABONO
+   ============================================================ */
+.modal-caja label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-terciario);
+  margin-bottom: 6px;
+  margin-top: var(--espacio-md);
+}
+
+.modal-caja input[type="number"] {
+  width: 100%;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde-2);
+  border-radius: var(--radio-sm);
+  color: var(--texto-primario);
+  font-family: var(--fuente-mono);
+  font-size: 1.1rem;
+  padding: 10px 12px;
+  transition: border-color var(--trans-rapida);
+}
+
+.modal-caja input[type="number"]:focus {
+  border-color: var(--color-primario);
+}
+
+/* ============================================================
+   RESPONSIVE DASHBOARD
+   ============================================================ */
+@media (max-width: 1100px) {
+  .tarjetas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-fila-inferior {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-lateral {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .tarjetas-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espacio-sm);
+  }
+
+  .tarjeta { padding: var(--espacio-md); }
+  .tarjeta-valor { font-size: 1.1rem; }
+
+  .dashboard-encabezado {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
