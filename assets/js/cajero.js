@@ -138,28 +138,29 @@ async function _mostrarPanelGestion(resolve) {
   `;
 
   // --- Botón volver — recarga la lista de selección ---
-  document.getElementById("btn-volver-lista").addEventListener("click", async () => {
-    const cajeros = await obtenerTodos("cajeros");
-    lista.innerHTML = cajeros.length
-      ? cajeros.map((c) => `
-          <button class="cajero-opcion" data-id="${c.id}" data-nombre="${c.nombre}">
-            <span class="cajero-inicial">${c.nombre.charAt(0).toUpperCase()}</span>
-            <span class="cajero-nombre">${c.nombre}</span>
-          </button>`
-        ).join("")
-      : `<p class="cajero-vacio">No hay cajeros registrados. Agrega uno abajo.</p>`;
+document.getElementById("btn-volver-lista").addEventListener("click", async () => {
+  const cajeros = await obtenerTodos("cajeros");
+  lista.innerHTML = cajeros.length
+    ? cajeros.map((c) => `
+        <button class="cajero-opcion" data-id="${c.id}" data-nombre="${c.nombre}">
+          <span class="cajero-inicial">${c.nombre.charAt(0).toUpperCase()}</span>
+          <span class="cajero-nombre">${c.nombre}</span>
+        </button>`
+      ).join("")
+    : `<p class="cajero-vacio">No hay cajeros registrados. Agrega uno abajo.</p>`;
 
-    // --- Reactiva los listeners de selección ---
-    lista.querySelectorAll(".cajero-opcion").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const cajero = { id: btn.dataset.id, nombre: btn.dataset.nombre };
-        setCajeroActivo(cajero);
-        _cerrarModal();
-        _mostrarBienvenida(cajero.nombre);
-        resolve();
-      });
+  lista.querySelectorAll(".cajero-opcion").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const cajero = { id: btn.dataset.id, nombre: btn.dataset.nombre };
+      setCajeroActivo(cajero);
+      // ← Llama directamente sin _confirmar
+      const modal = document.getElementById("modal-cajero");
+      if (modal) modal.remove();
+      _mostrarBienvenida(cajero.nombre);
+      resolve();
     });
   });
+});
 
   // --- Eliminar cajero ---
   lista.querySelectorAll(".btn-eliminar-cajero").forEach((btn) => {
