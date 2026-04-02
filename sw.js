@@ -1,12 +1,18 @@
 /**
  * sw.js — Service Worker
  * Minimercado Control-Total | JVSoftware
- * Estrategia: Cache-First para assets estáticos, Network-First para navegación
+ * Estrategia: Network-First para CSS/JS, Cache-First para assets estáticos, Network-First para navegación
+ *
+ * ⚡ Para actualizar assets: solo incrementa VERSION abajo.
  */
 
-const CACHE_NAME = 'minimercado-v1.0.0';
-const CACHE_STATIC = 'minimercado-static-v1';
-const CACHE_DYNAMIC = 'minimercado-dynamic-v1';
+// ─── VERSIÓN ÚNICA ────────────────────────────────────────────────────────────
+const VERSION = 'v1.0.1'; // ← Solo cambia esto al actualizar assets
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CACHE_NAME    = `minimercado-${VERSION}`;
+const CACHE_STATIC  = `minimercado-static-${VERSION}`;
+const CACHE_DYNAMIC = `minimercado-dynamic-${VERSION}`;
 
 // Assets críticos — se cachean en la instalación
 const STATIC_ASSETS = [
@@ -38,7 +44,7 @@ const OFFLINE_PAGE = '/index.html';
    INSTALL — Cachear todos los assets críticos
 ───────────────────────────────────────── */
 self.addEventListener('install', (event) => {
-  console.log('[SW] Instalando Minimercado Control-Total...');
+  console.log(`[SW] Instalando Minimercado Control-Total ${VERSION}...`);
 
   event.waitUntil(
     caches.open(CACHE_STATIC).then((cache) => {
@@ -46,7 +52,6 @@ self.addEventListener('install', (event) => {
       return cache.addAll(STATIC_ASSETS);
     }).then(() => {
       console.log('[SW] Assets cacheados correctamente.');
-      // Forzar activación inmediata sin esperar
       return self.skipWaiting();
     }).catch((err) => {
       console.error('[SW] Error en instalación:', err);
@@ -55,16 +60,19 @@ self.addEventListener('install', (event) => {
 });
 
 /* ─────────────────────────────────────────
-   ACTIVATE — Limpiar caches viejos
+   ACTIVATE — Limpiar caches de versiones anteriores
 ───────────────────────────────────────── */
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activando nueva versión...');
+  console.log(`[SW] Activando versión ${VERSION}...`);
+
+  // Los caches válidos para esta versión
+  const VALID_CACHES = [CACHE_STATIC, CACHE_DYNAMIC];
 
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => name !== CACHE_STATIC && name !== CACHE_DYNAMIC)
+          .filter((name) => !VALID_CACHES.includes(name))
           .map((name) => {
             console.log('[SW] Eliminando cache obsoleto:', name);
             return caches.delete(name);
@@ -72,7 +80,6 @@ self.addEventListener('activate', (event) => {
       );
     }).then(() => {
       console.log('[SW] Activado. Controlando todos los clientes.');
-      // Tomar control de todas las pestañas abiertas inmediatamente
       return self.clients.claim();
     })
   );
@@ -91,20 +98,29 @@ self.addEventListener('fetch', (event) => {
   // Ignorar extensiones de Chrome y otros esquemas no-http
   if (!url.protocol.startsWith('http')) return;
 
-  // Ignorar requests a Sanity o APIs externas (si se agregan en el futuro)
+  // Ignorar requests a APIs externas
   if (url.hostname !== self.location.hostname) return;
 
-  // Estrategia según tipo de recurso
-  if (isStaticAsset(url.pathname)) {
-    // Cache-First para CSS, JS, imágenes, fuentes
-    event.respondWith(cacheFirst(request));
-  } else if (isNavigation(request)) {
-    // Network-First para navegación HTML
+  // CSS y JS → Network-First (siempre frescos cuando hay internet)
+  if (url.pathname.endsWith('.css') || url.pathname.endsWith('.js')) {
     event.respondWith(networkFirst(request));
-  } else {
-    // Stale-While-Revalidate para el resto
-    event.respondWith(staleWhileRevalidate(request));
+    return;
   }
+
+  // Imágenes, fuentes, iconos → Cache-First (no cambian frecuentemente)
+  if (isStaticAsset(url.pathname)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  // Navegación HTML → Network-First
+  if (isNavigation(request)) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // Resto → Stale-While-Revalidate
+  event.respondWith(staleWhileRevalidate(request));
 });
 
 /* ─────────────────────────────────────────
@@ -112,13 +128,9 @@ self.addEventListener('fetch', (event) => {
 ───────────────────────────────────────── */
 function isStaticAsset(pathname) {
   return (
-    pathname.includes('/assets/css/') ||
-    pathname.includes('/assets/js/') ||
     pathname.includes('/assets/icons/') ||
     pathname.includes('/assets/fonts/') ||
     pathname.includes('/assets/img/') ||
-    pathname.endsWith('.css') ||
-    pathname.endsWith('.js') ||
     pathname.endsWith('.png') ||
     pathname.endsWith('.jpg') ||
     pathname.endsWith('.webp') ||
@@ -171,7 +183,7 @@ async function networkFirst(request) {
     const cached = await caches.match(request);
     if (cached) return cached;
 
-    // Fallback al POS si no hay nada
+    // Fallback al index si no hay nada cacheado
     const fallback = await caches.match(OFFLINE_PAGE);
     return fallback || new Response(offlineFallbackHTML(), {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },
