@@ -2,7 +2,8 @@
 // pos.js — Punto de Venta (POS)
 // Minimercado Control-Total | JVSoftware
 // Maneja: búsqueda por texto, escáner USB, cámara con
-// BarcodeDetector, carrito de venta, cobro y registro en DB.
+// BarcodeDetector (nativo) + ZXing (fallback PC), carrito,
+// cobro y registro en DB.
 // ============================================================
 
 import {
@@ -19,9 +20,9 @@ import { getCajeroActivo } from "./cajero.js";
 // ============================================================
 // ESTADO GLOBAL DEL CARRITO
 // ============================================================
-let carrito = []; // Array de { producto, cantidad, subtotal }
+let carrito = [];       // Array de { producto, cantidad, subtotal }
 let streamCamara = null; // Referencia al stream activo de la cámara
-let escaneando = false; // Evita lecturas duplicadas de BarcodeDetector
+let escaneando = false;  // Evita lecturas duplicadas de BarcodeDetector
 
 // ============================================================
 // INICIALIZACIÓN
@@ -29,20 +30,15 @@ let escaneando = false; // Evita lecturas duplicadas de BarcodeDetector
 // ============================================================
 function iniciarPOS() {
   const inputBusqueda = document.getElementById("pos-busqueda");
-  const btnCamara = document.getElementById("pos-btn-camara");
-  const btnCobrar = document.getElementById("pos-btn-cobrar");
-  const btnLimpiar = document.getElementById("pos-btn-limpiar");
+  const btnCamara     = document.getElementById("pos-btn-camara");
+  const btnCobrar     = document.getElementById("pos-btn-cobrar");
+  const btnLimpiar    = document.getElementById("pos-btn-limpiar");
 
   if (!inputBusqueda) return;
 
   // --- Escáner USB: el dispositivo envía el código + Enter ---
-  // Se detecta por la velocidad de escritura (< 50ms entre chars)
-  let bufferEscaner = "";
-  let timerEscaner = null;
-
   inputBusqueda.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
-      // --- Si viene del escáner USB, el buffer ya está completo ---
       const codigo = inputBusqueda.value.trim();
       if (codigo) _procesarCodigoBarra(codigo);
       inputBusqueda.value = "";
@@ -77,7 +73,6 @@ function iniciarPOS() {
 
 // ============================================================
 // BÚSQUEDA POR TEXTO
-// Muestra sugerencias debajo del input.
 // ============================================================
 async function _buscarPorTexto(texto) {
   const resultados = await buscarProductosPorNombre(texto);
@@ -100,7 +95,7 @@ function _renderizarSugerencias(productos) {
   }
 
   lista.innerHTML = productos
-    .slice(0, 8) // Máximo 8 sugerencias visibles
+    .slice(0, 8)
     .map(
       (p) => `
       <li class="pos-sugerencia-item" data-id="${p.id}">
@@ -130,7 +125,6 @@ function _ocultarSugerencias() {
 
 // ============================================================
 // PROCESAMIENTO DE CÓDIGO DE BARRA
-// Usado tanto por escáner USB como por cámara.
 // ============================================================
 async function _procesarCodigoBarra(codigo) {
   const producto = await buscarProductoPorCodigo(codigo);
@@ -138,20 +132,25 @@ async function _procesarCodigoBarra(codigo) {
   if (producto) {
     agregarAlCarrito(producto);
   } else {
-    // --- Producto no encontrado: ofrece registrarlo ---
     _mostrarModalProductoNuevo(codigo);
   }
 }
 
 // ============================================================
-// MÓDULO DE CÁMARA — NATIVO (BarcodeDetector API)
-// Sin librerías externas. Solo Chrome/Edge modernos.
+// MÓDULO DE CÁMARA
+// Estrategia: BarcodeDetector nativo (Android/Chrome moderno)
+//             ZXing como fallback (PC Windows/Linux)
 // ============================================================
 async function _abrirModalCamara() {
-  // Comprobar soporte nativo
-  if (!window.BarcodeDetector) {
-    alert("Para usar el escáner, el sitio debe estar en un servidor seguro (HTTPS) o habilitar las funciones experimentales en Chrome.");
-    return;
+  // Detecta soporte nativo real (no solo existencia del objeto)
+  let tieneNativo = false;
+  if (typeof BarcodeDetector !== "undefined") {
+    try {
+      const formatos = await BarcodeDetector.getSupportedFormats();
+      tieneNativo = formatos.length > 0;
+    } catch (e) {
+      tieneNativo = false;
+    }
   }
 
   _cerrarModalCamara(); // Limpiar si había uno abierto
@@ -173,17 +172,22 @@ async function _abrirModalCamara() {
     </div>
   `;
   document.body.appendChild(modal);
-
   document.getElementById("btn-cerrar-camara").addEventListener("click", _cerrarModalCamara);
 
-  await _iniciarStreamNativo();
+  if (tieneNativo) {
+    console.log("[Cámara] Usando BarcodeDetector nativo.");
+    await _iniciarStreamNativo();
+  } else {
+    console.log("[Cámara] BarcodeDetector no disponible — usando ZXing (fallback PC).");
+    await _iniciarStreamZXing();
+  }
 }
 
+// --- Estrategia A: BarcodeDetector nativo (móvil/Chrome moderno) ---
 async function _iniciarStreamNativo() {
   try {
-    // Pedimos la cámara de forma genérica para evitar errores de ID en Windows
     streamCamara = await navigator.mediaDevices.getUserMedia({
-      video: { 
+      video: {
         facingMode: "environment",
         width: { ideal: 1280 },
         height: { ideal: 720 }
@@ -193,13 +197,10 @@ async function _iniciarStreamNativo() {
     const video = document.getElementById("camara-video");
     if (video) {
       video.srcObject = streamCamara;
-      // Esperamos a que el video esté listo para empezar a detectar
-      video.onloadedmetadata = () => {
-        _iniciarDeteccionNativa(video);
-      };
+      video.onloadedmetadata = () => _iniciarDeteccionNativa(video);
     }
   } catch (error) {
-    console.error("Error cámara nativa:", error);
+    console.error("[Cámara] Error stream nativo:", error);
     alert("No se pudo acceder a la cámara. Revisa los permisos.");
     _cerrarModalCamara();
   }
@@ -219,38 +220,100 @@ function _iniciarDeteccionNativa(video) {
       const barcodes = await detector.detect(video);
       if (barcodes.length > 0) {
         const codigo = barcodes[0].rawValue;
-        console.log("Código detectado nativamente:", codigo);
-        
-        escaneando = false; 
+        console.log("[Cámara] Código detectado (nativo):", codigo);
+        escaneando = false;
         _cerrarModalCamara();
-        _procesarCodigoBarra(codigo); // Tu función que busca en IndexedDB
-        return; 
+        _procesarCodigoBarra(codigo);
+        return;
       }
     } catch (e) {
-      // Errores temporales de frames vacíos
+      // Errores temporales de frames vacíos — ignorar
     }
-    
-    if (escaneando) {
-      requestAnimationFrame(renderLoop);
-    }
+
+    if (escaneando) requestAnimationFrame(renderLoop);
   };
 
   requestAnimationFrame(renderLoop);
 }
 
+// --- Estrategia B: ZXing fallback (PC Windows/Linux) ---
+async function _iniciarStreamZXing() {
+  // Carga ZXing dinámicamente solo cuando se necesita (lazy load)
+  if (!window.ZXingBrowser) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/index.min.js";
+      script.onload = resolve;
+      script.onerror = () => reject(new Error("No se pudo cargar ZXing"));
+      document.head.appendChild(script);
+    }).catch((err) => {
+      console.error("[Cámara] Error cargando ZXing:", err);
+      alert("No se pudo inicializar el escáner. Verifica tu conexión.");
+      _cerrarModalCamara();
+      return;
+    });
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "environment",
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }
+    });
+    streamCamara = stream;
+
+    const video = document.getElementById("camara-video");
+    if (!video) return;
+    video.srcObject = stream;
+
+    const codeReader = new ZXingBrowser.BrowserMultiFormatReader();
+
+    // Guarda referencia para poder hacer reset al cerrar
+    window._zxingReader = codeReader;
+
+    codeReader.decodeFromStream(stream, video, (result, err) => {
+      if (result) {
+        const codigo = result.getText();
+        console.log("[Cámara] Código detectado (ZXing):", codigo);
+        codeReader.reset();
+        window._zxingReader = null;
+        _cerrarModalCamara();
+        _procesarCodigoBarra(codigo);
+      }
+      // Los errores de frames vacíos son normales en ZXing — ignorar
+    });
+
+  } catch (error) {
+    console.error("[Cámara] Error stream ZXing:", error);
+    alert("No se pudo acceder a la cámara. Revisa los permisos.");
+    _cerrarModalCamara();
+  }
+}
+
+// --- Cierre de cámara (limpia ambas estrategias) ---
 function _cerrarModalCamara() {
   escaneando = false;
+
+  // Detiene ZXing si estaba activo
+  if (window._zxingReader) {
+    try { window._zxingReader.reset(); } catch (e) {}
+    window._zxingReader = null;
+  }
+
+  // Detiene el stream de la cámara
   if (streamCamara) {
-    streamCamara.getTracks().forEach(track => track.stop());
+    streamCamara.getTracks().forEach((track) => track.stop());
     streamCamara = null;
   }
+
   const modal = document.getElementById("modal-camara");
   if (modal) modal.remove();
 }
 
 // ============================================================
 // MODAL PRODUCTO NUEVO
-// Aparece cuando se escanea un código no registrado.
 // ============================================================
 function _mostrarModalProductoNuevo(codigoBarra) {
   const modal = document.createElement("div");
@@ -271,7 +334,6 @@ function _mostrarModalProductoNuevo(codigoBarra) {
 
   document.getElementById("btn-registrar-nuevo").addEventListener("click", () => {
     modal.remove();
-    // --- Redirige al formulario de inventario con el código prellenado ---
     window.location.href = `inventario.html?codigo=${codigoBarra}&nuevo=1`;
   });
 
@@ -283,8 +345,6 @@ function _mostrarModalProductoNuevo(codigoBarra) {
 // ============================================================
 // GESTIÓN DEL CARRITO
 // ============================================================
-
-// --- Agrega un producto al carrito o incrementa su cantidad ---
 function agregarAlCarrito(producto) {
   if (producto.stock <= 0) {
     _mostrarToast(`⚠️ ${producto.nombre} sin stock`, "advertencia");
@@ -311,7 +371,6 @@ function agregarAlCarrito(producto) {
   _renderizarCarrito();
 }
 
-// --- Cambia la cantidad de un item en el carrito ---
 function cambiarCantidad(productoId, nuevaCantidad) {
   const item = carrito.find((i) => i.producto.id === productoId);
   if (!item) return;
@@ -331,19 +390,16 @@ function cambiarCantidad(productoId, nuevaCantidad) {
   _renderizarCarrito();
 }
 
-// --- Elimina un item del carrito ---
 function quitarDelCarrito(productoId) {
   carrito = carrito.filter((item) => item.producto.id !== productoId);
   _renderizarCarrito();
 }
 
-// --- Vacía todo el carrito ---
 function limpiarCarrito() {
   carrito = [];
   _renderizarCarrito();
 }
 
-// --- Calcula el total del carrito ---
 function calcularTotal() {
   return carrito.reduce((acc, item) => acc + item.subtotal, 0);
 }
@@ -353,8 +409,8 @@ function calcularTotal() {
 // ============================================================
 function _renderizarCarrito() {
   const contenedor = document.getElementById("pos-carrito");
-  const totalEl = document.getElementById("pos-total");
-  const btnCobrar = document.getElementById("pos-btn-cobrar");
+  const totalEl    = document.getElementById("pos-total");
+  const btnCobrar  = document.getElementById("pos-btn-cobrar");
 
   if (!contenedor) return;
 
@@ -396,10 +452,9 @@ function _renderizarCarrito() {
     )
     .join("");
 
-  // --- Enlaza controles de cantidad ---
   contenedor.querySelectorAll(".btn-restar").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const id = Number(btn.dataset.id);
+      const id   = Number(btn.dataset.id);
       const item = carrito.find((i) => i.producto.id === id);
       if (item) cambiarCantidad(id, item.cantidad - 1);
     });
@@ -407,7 +462,7 @@ function _renderizarCarrito() {
 
   contenedor.querySelectorAll(".btn-sumar").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const id = Number(btn.dataset.id);
+      const id   = Number(btn.dataset.id);
       const item = carrito.find((i) => i.producto.id === id);
       if (item) cambiarCantidad(id, item.cantidad + 1);
     });
@@ -423,7 +478,6 @@ function _renderizarCarrito() {
     btn.addEventListener("click", () => quitarDelCarrito(Number(btn.dataset.id)));
   });
 
-  // --- Actualiza el total ---
   const total = calcularTotal();
   if (totalEl) totalEl.textContent = `Bs. ${total.toFixed(2)}`;
   if (btnCobrar) btnCobrar.disabled = false;
@@ -436,7 +490,6 @@ function _abrirModalCobro() {
   if (!carrito.length) return;
 
   const total = calcularTotal();
-  const clientes = []; // Se carga dinámicamente para fiados
 
   const modal = document.createElement("div");
   modal.id = "modal-cobro";
@@ -489,12 +542,12 @@ function _abrirModalCobro() {
 
 async function _cargarClientesEnSelect() {
   const clientes = await obtenerTodos("clientes");
-  const select = document.getElementById("cobro-cliente-select");
+  const select   = document.getElementById("cobro-cliente-select");
   if (!select) return;
 
   clientes.forEach((c) => {
-    const option = document.createElement("option");
-    option.value = c.id;
+    const option       = document.createElement("option");
+    option.value       = c.id;
     option.textContent = `${c.nombre} (Deuda: Bs. ${c.saldo_pendiente?.toFixed(2) ?? "0.00"})`;
     select.appendChild(option);
   });
@@ -503,34 +556,31 @@ async function _cargarClientesEnSelect() {
 function _bindEventosCobro(total) {
   const modal = document.getElementById("modal-cobro");
 
-  // --- Toggle contado/fiado ---
   modal.querySelectorAll('input[name="tipo-venta"]').forEach((radio) => {
     radio.addEventListener("change", () => {
       const esFiado = radio.value === "fiado";
-      document.getElementById("cobro-fiado-panel").style.display = esFiado ? "block" : "none";
-      document.getElementById("cobro-contado-panel").style.display = esFiado ? "none" : "block";
+      document.getElementById("cobro-fiado-panel").style.display   = esFiado ? "block" : "none";
+      document.getElementById("cobro-contado-panel").style.display = esFiado ? "none"  : "block";
     });
   });
 
-  // --- Cálculo de cambio en tiempo real ---
   const inputMonto = document.getElementById("cobro-monto-recibido");
   if (inputMonto) {
     inputMonto.addEventListener("input", () => {
-      const recibido = parseFloat(inputMonto.value) || 0;
-      const cambio = recibido - total;
+      const recibido  = parseFloat(inputMonto.value) || 0;
+      const cambio    = recibido - total;
       const panelCambio = document.getElementById("cobro-cambio-panel");
       const valorCambio = document.getElementById("cobro-cambio-valor");
 
       if (recibido >= total) {
         panelCambio.style.display = "block";
-        valorCambio.textContent = `Bs. ${cambio.toFixed(2)}`;
+        valorCambio.textContent   = `Bs. ${cambio.toFixed(2)}`;
       } else {
         panelCambio.style.display = "none";
       }
     });
   }
 
-  // --- Confirmar venta ---
   document.getElementById("btn-confirmar-cobro").addEventListener("click", async () => {
     const tipoVenta = modal.querySelector('input[name="tipo-venta"]:checked').value;
 
@@ -563,40 +613,37 @@ function _bindEventosCobro(total) {
 // ============================================================
 async function _registrarVenta(tipo, clienteId) {
   const cajero = getCajeroActivo();
-  const ahora = new Date().toISOString();
+  const ahora  = new Date().toISOString();
 
-  // --- Construye el objeto de venta ---
   const venta = {
     fecha: ahora,
     items: carrito.map((item) => ({
-      producto_id: item.producto.id,
-      nombre: item.producto.nombre,
-      cantidad: item.cantidad,
+      producto_id:  item.producto.id,
+      nombre:       item.producto.nombre,
+      cantidad:     item.cantidad,
       precio_venta: item.producto.precio_venta,
       precio_costo: item.producto.precio_costo,
-      subtotal: item.subtotal,
+      subtotal:     item.subtotal,
     })),
-    total: calcularTotal(),
-    cajero: cajero ? cajero.nombre : "Sin cajero",
+    total:      calcularTotal(),
+    cajero:     cajero ? cajero.nombre : "Sin cajero",
     tipo,
     cliente_id: clienteId || null,
   };
 
   const ventaId = await agregar("ventas", venta);
 
-  // --- Reduce stock de cada producto vendido ---
   for (const item of carrito) {
     await reducirStock(item.producto.id, item.cantidad);
   }
 
-  // --- Si es fiado, registra el crédito y actualiza saldo del cliente ---
   if (tipo === "fiado" && clienteId) {
     await agregar("creditos", {
       cliente_id: clienteId,
-      monto: venta.total,
-      fecha: ahora,
-      tipo: "cargo",
-      venta_id: ventaId,
+      monto:      venta.total,
+      fecha:      ahora,
+      tipo:       "cargo",
+      venta_id:   ventaId,
     });
 
     const cliente = await obtenerPorId("clientes", clienteId);
@@ -609,8 +656,6 @@ async function _registrarVenta(tipo, clienteId) {
   limpiarCarrito();
   _mostrarToast(`✅ Venta registrada — Bs. ${venta.total.toFixed(2)}`, "exito");
   console.log(`✅ Venta #${ventaId} registrada.`);
-
-  // --- Imprime el recibo automáticamente (opcional) ---
   _generarRecibo(venta, ventaId);
 }
 
@@ -623,13 +668,13 @@ function _generarRecibo(venta, ventaId) {
 
   const itemsHTML = venta.items
     .map(
-      (item) =>
-        `<tr>
-          <td>${item.nombre}</td>
-          <td style="text-align:center">${item.cantidad}</td>
-          <td style="text-align:right">Bs. ${item.precio_venta.toFixed(2)}</td>
-          <td style="text-align:right">Bs. ${item.subtotal.toFixed(2)}</td>
-        </tr>`
+      (item) => `
+      <tr>
+        <td>${item.nombre}</td>
+        <td style="text-align:center">${item.cantidad}</td>
+        <td style="text-align:right">Bs. ${item.precio_venta.toFixed(2)}</td>
+        <td style="text-align:right">Bs. ${item.subtotal.toFixed(2)}</td>
+      </tr>`
     )
     .join("");
 
@@ -672,8 +717,8 @@ function _generarRecibo(venta, ventaId) {
 // TOAST DE NOTIFICACIÓN
 // ============================================================
 function _mostrarToast(mensaje, tipo = "info") {
-  const toast = document.createElement("div");
-  toast.className = `pos-toast pos-toast--${tipo}`;
+  const toast       = document.createElement("div");
+  toast.className   = `pos-toast pos-toast--${tipo}`;
   toast.textContent = mensaje;
   document.body.appendChild(toast);
 
