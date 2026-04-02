@@ -83,11 +83,12 @@ async function mostrarModalCajero() {
 function _bindEventosModal(resolve) {
   const modal = document.getElementById("modal-cajero");
 
+  // ← _confirmar ahora usa modal.remove() en lugar de _cerrarModal()
   const _confirmar = (cajero) => {
     setCajeroActivo(cajero);
-    _cerrarModal();
+    modal.remove(); // ← antes era _cerrarModal() que no existe
     _mostrarBienvenida(cajero.nombre);
-    resolve(); // ← Aquí resuelve la Promise, arrancar() continúa
+    resolve();
   };
 
   // --- Seleccionar cajero existente ---
