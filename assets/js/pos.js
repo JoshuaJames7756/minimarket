@@ -36,15 +36,36 @@ function iniciarPOS() {
 
   if (!inputBusqueda) return;
 
-  // --- Escáner USB: el dispositivo envía el código + Enter ---
-  inputBusqueda.addEventListener("keydown", (e) => {
+  // --- Escáner USB global: captura keystrokes sin necesitar foco en el input ---
+  // El scanner actúa como teclado: dispara todos los dígitos en ~50ms + Enter.
+  // El timeout de 80ms distingue escritura humana (lenta) de scanner (rápida).
+  let _scanBuffer = "";
+  let _scanTimer  = null;
+
+  document.addEventListener("keydown", (e) => {
+    // Si el foco está en cualquier input/textarea/select, dejar que escriba normal
+    const tag = document.activeElement?.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
     if (e.key === "Enter") {
-      const codigo = inputBusqueda.value.trim();
-      if (codigo) _procesarCodigoBarra(codigo);
-      inputBusqueda.value = "";
-      e.preventDefault();
+      // Enter con buffer válido → procesar como código de barras
+      if (_scanBuffer.length > 2) {
+        _procesarCodigoBarra(_scanBuffer);
+      }
+      _scanBuffer = "";
+      clearTimeout(_scanTimer);
       return;
     }
+
+    // Acumular solo caracteres imprimibles (dígitos, letras, guiones)
+    if (e.key.length === 1) {
+      _scanBuffer += e.key;
+    }
+
+    // Reset automático si pasan 80ms sin nueva tecla
+    // (evita que keystrokes sueltos del usuario se acumulen)
+    clearTimeout(_scanTimer);
+    _scanTimer = setTimeout(() => { _scanBuffer = ""; }, 80);
   });
 
   // --- Búsqueda manual por texto (con debounce de 300ms) ---
@@ -743,4 +764,3 @@ export {
   limpiarCarrito,
   calcularTotal,
 };
-
